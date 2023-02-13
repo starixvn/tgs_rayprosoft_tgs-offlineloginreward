@@ -28,8 +28,10 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 		var utcNow = _systemClock.UtcNow;
 
 		var promotions = await _promotionService
-			.GetOfflineLoginRewardPromotionsAsync(command.BrandId, cancellationToken)
-			.Where(p => p.EventDuring.From <= utcNow && p.EventDuring.To > utcNow)
+			.GetOfflineLoginRewardPromotionsAsync(cancellationToken)
+			.Where(p => p.BrandId == command.BrandId 
+			            && p.EventDuring.From <= utcNow 
+			            && p.EventDuring.To > utcNow)
 			.ToArrayAsync(cancellationToken)
 			.ConfigureAwait(false);
 

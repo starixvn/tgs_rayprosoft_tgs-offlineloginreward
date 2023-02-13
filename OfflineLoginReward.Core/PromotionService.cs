@@ -13,15 +13,9 @@ internal class PromotionService : IPromotionService
 	}
 
 	public IAsyncEnumerable<PromotionMainInfo> GetOfflineLoginRewardPromotionsAsync(
-		Guid brandId, 
 		CancellationToken cancellationToken = default)
 		=> _promotionServiceClient
-			.ListPromotionsByPromotionTypeAsync(OfflineLoginRewardUtility.PromotionType, cancellationToken)
-			.Where(p => p.BrandId == brandId)
-			.ToArrayAsync(cancellationToken)
-			.AsTask()
-			.ToAsyncEnumerable()
-			.SelectMany(arr => arr.ToAsyncEnumerable());
+			.ListPromotionsByPromotionTypeAsync(OfflineLoginRewardUtility.PromotionType, cancellationToken);
 
 	public async ValueTask<OfflineLoginRewardSettings?> GetOfflineLoginRewardSettingsAsync(
 		Guid promotionId, 

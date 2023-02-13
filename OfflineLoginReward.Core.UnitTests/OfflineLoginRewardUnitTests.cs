@@ -53,7 +53,6 @@ public class OfflineLoginRewardUnitTests
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionService.GetOfflineLoginRewardPromotionsAsync(
-				Arg.Is(brandId),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
 
@@ -142,7 +141,6 @@ public class OfflineLoginRewardUnitTests
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionService.GetOfflineLoginRewardPromotionsAsync(
-				Arg.Is(brandId),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
 
@@ -205,7 +203,6 @@ public class OfflineLoginRewardUnitTests
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionService.GetOfflineLoginRewardPromotionsAsync(
-				Arg.Is(brandId),
 				Arg.Any<CancellationToken>())
 			.Returns(Array.Empty<PromotionMainInfo>().ToAsyncEnumerable());
 

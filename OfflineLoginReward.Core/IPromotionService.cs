@@ -5,7 +5,6 @@ namespace Tgs.OfflineLoginReward;
 public interface IPromotionService
 {
 	IAsyncEnumerable<PromotionMainInfo> GetOfflineLoginRewardPromotionsAsync(
-		Guid brandId, 
 		CancellationToken cancellationToken = default);
 
 	ValueTask<OfflineLoginRewardSettings?> GetOfflineLoginRewardSettingsAsync(

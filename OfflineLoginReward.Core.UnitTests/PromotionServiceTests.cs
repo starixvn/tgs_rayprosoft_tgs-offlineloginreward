@@ -54,11 +54,11 @@ public class PromotionServiceTests
 		var sut = new PromotionService(fakePromotionServiceClient);
 
 		var actual = await sut
-			.GetOfflineLoginRewardPromotionsAsync(brandId)
+			.GetOfflineLoginRewardPromotionsAsync()
 			.ToArrayAsync();
 
 		Assert.NotNull(actual);
-		Assert.Equal(2, actual.Length);
+		Assert.Equal(3, actual.Length);
 	}
 
 	[Fact]
