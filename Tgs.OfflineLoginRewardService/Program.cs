@@ -20,7 +20,10 @@ builder.Services
 				options.Url = builder.Configuration.GetConnectionString("Nats")!)
 			.AddProcessor<OfflineLoginRewardSettingProcessor>(
 				"tgs.promotion.offlineloginreward.setting",
-				"tgs.promotion.offlineloginreward.setting"))
+				"tgs.promotion.offlineloginreward.setting")
+			.AddHandler<PlayerLoginHandler>(
+				"tgs.operator.player.login", 
+				"tgs.operator.player.login"))
 	.ClearAllExchanges()
 	.AddNatsGlobPatternExchange("*");
 
