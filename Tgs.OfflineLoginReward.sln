@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfflineLoginReward.Core", "OfflineLoginReward.Core\OfflineLoginReward.Core.csproj", "{9F33043F-929B-4430-B523-3FE09ACA6DCA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.OfflineLoginRewardService", "Tgs.OfflineLoginRewardService\Tgs.OfflineLoginRewardService.csproj", "{6F976986-811E-425F-820E-2BC842509177}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F33043F-929B-4430-B523-3FE09ACA6DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F33043F-929B-4430-B523-3FE09ACA6DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F33043F-929B-4430-B523-3FE09ACA6DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F33043F-929B-4430-B523-3FE09ACA6DCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F976986-811E-425F-820E-2BC842509177}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F976986-811E-425F-820E-2BC842509177}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F976986-811E-425F-820E-2BC842509177}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F976986-811E-425F-820E-2BC842509177}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {60F41035-0398-4377-A512-C012697F236F}
+	EndGlobalSection
+EndGlobal
