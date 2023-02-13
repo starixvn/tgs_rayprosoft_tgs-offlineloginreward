@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfflineLoginReward.Core", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.OfflineLoginRewardService", "Tgs.OfflineLoginRewardService\Tgs.OfflineLoginRewardService.csproj", "{6F976986-811E-425F-820E-2BC842509177}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.OfflineLoginRewardService.UnitTests", "Tgs.OfflineLoginRewardService.UnitTests\Tgs.OfflineLoginRewardService.UnitTests.csproj", "{E473E763-13D3-44FE-A8DA-89D39C604628}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6F976986-811E-425F-820E-2BC842509177}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F976986-811E-425F-820E-2BC842509177}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F976986-811E-425F-820E-2BC842509177}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E473E763-13D3-44FE-A8DA-89D39C604628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E473E763-13D3-44FE-A8DA-89D39C604628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E473E763-13D3-44FE-A8DA-89D39C604628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E473E763-13D3-44FE-A8DA-89D39C604628}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,5 +3,5 @@
 public record OfflineLoginRewardSettings(
 	decimal BonusAmount,
 	decimal TurnoverMultiple,
-	string[] PlayerCodes);
+	IEnumerable<string> PlayerCodes);
 

@@ -5,13 +5,11 @@ using Tgs.Promotion.Clients.Protos;
 
 namespace Tgs.OfflineLoginReward.MessageQueue;
 
-public class OfflineLoginRewardSettingProcessor : IMessageProcessor
+internal class OfflineLoginRewardSettingProcessor : IMessageProcessor
 {
-	private static readonly JsonSerializerOptions _SerializerOptions = new()
+	private static readonly JsonSerializerOptions _SettingSerializerOptions = new()
 	{
-		WriteIndented = false,
-		PropertyNameCaseInsensitive = false,
-		PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+		PropertyNameCaseInsensitive = false
 	};
 
 	public ValueTask<ReadOnlyMemory<byte>> HandleAsync(
@@ -20,7 +18,7 @@ public class OfflineLoginRewardSettingProcessor : IMessageProcessor
 	{
 		var request = CampaignDetailRequest.Parser.ParseFrom(data.Span);
 
-		var settings = JsonSerializer.Deserialize<OfflineLoginRewardSettings>(request.Settings);
+		var settings = JsonSerializer.Deserialize<OfflineLoginRewardSettings>(request.Settings, _SettingSerializerOptions);
 
 		if (settings == null)
 			throw new InvalidOperationException("Settings is null");
@@ -28,12 +26,15 @@ public class OfflineLoginRewardSettingProcessor : IMessageProcessor
 		if (settings.BonusAmount <= 0m)
 			throw new InvalidOperationException("BonusAmount should be greater than 0");
 
-		if (settings.PlayerCodes.Length == 0)
+		if (settings.TurnoverMultiple <= 0)
+			throw new InvalidOperationException("TurnoverMultiple should be greater than 0");
+
+		if (!settings.PlayerCodes.Any())
 			throw new InvalidOperationException("Missing PlayerCodes");
 
 		var response = new CampaignDetailResponse
 		{
-			CampaignDetail = JsonSerializer.Serialize(settings, _SerializerOptions),
+			CampaignDetail = JsonSerializer.Serialize(settings, OfflineLoginRewardUtility.SerializerOptions),
 			TurnoverMultiple = settings.TurnoverMultiple
 		};
 
