@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using ExpectedObjects;
 using Google.Protobuf;
 using Tgs.OfflineLoginReward;
 using Tgs.OfflineLoginReward.MessageQueue;
@@ -39,9 +40,10 @@ public class OfflineLoginRewardSettingProcessorTests
 			JsonSerializer.Deserialize<OfflineLoginRewardSettings>(actual.CampaignDetail, OfflineLoginRewardUtility.SerializerOptions);
 
 		Assert.NotNull(actualSettings);
-		Assert.Equal(expected.BonusAmount, actualSettings.BonusAmount);
-		Assert.Equal(expected.TurnoverMultiple, actualSettings.TurnoverMultiple);
-		Assert.Equal(expected.PlayerCodes, actualSettings.PlayerCodes);
+
+		expected
+			.ToExpectedObject(ctx => ctx.IgnoreEqualsOverride())
+			.ShouldMatch(actualSettings);
 	}
 
 	[Fact]
