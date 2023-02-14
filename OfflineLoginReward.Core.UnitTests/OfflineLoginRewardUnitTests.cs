@@ -66,13 +66,17 @@ public class OfflineLoginRewardUnitTests
 
 		var recordId = Guid.NewGuid();
 
+		var createEventInfo = new CreateOfflineLoginRewardEventInfo(
+			playerCode,
+			promotionId,
+			brandId,
+			10m,
+			10m,
+			now);
+
 		_ = fakeTgsRepository
-			.CreateOfflineLoginRewardRecordAsync(
-				Arg.Is(promotionId),
-				Arg.Is(playerCode),
-				Arg.Is(10m),
-				Arg.Is(10m),
-				Arg.Any<DateTime>(),
+			.CreateOfflineLoginRewardEventAsync(
+				Arg.Is(createEventInfo),
 				Arg.Any<CancellationToken>())
 			.Returns(recordId);
 
@@ -82,12 +86,8 @@ public class OfflineLoginRewardUnitTests
 
 		_ = fakeTgsRepository
 			.Received(1)
-			.CreateOfflineLoginRewardRecordAsync(
-				Arg.Is(promotionId),
-				Arg.Is(playerCode),
-				Arg.Is(10m),
-				Arg.Is(10m),
-				Arg.Any<DateTime>(),
+			.CreateOfflineLoginRewardEventAsync(
+				Arg.Is(createEventInfo),
 				Arg.Any<CancellationToken>());
 
 		_ = fakeDistributeService
@@ -159,12 +159,9 @@ public class OfflineLoginRewardUnitTests
 
 		_ = fakeTgsRepository
 			.DidNotReceive()
-			.CreateOfflineLoginRewardRecordAsync(
-				Arg.Is(promotionId),
-				Arg.Is(playerCode),
-				Arg.Any<decimal>(),
-				Arg.Any<decimal>(),
-				Arg.Any<DateTime>(),
+			.CreateOfflineLoginRewardEventAsync(
+				Arg.Is<CreateOfflineLoginRewardEventInfo>(x 
+					=> x.PlayerCode == playerCode && x.PromotionId == promotionId),
 				Arg.Any<CancellationToken>());
 
 		_ = fakeDistributeService
@@ -216,12 +213,9 @@ public class OfflineLoginRewardUnitTests
 
 		_ = fakeTgsRepository
 			.DidNotReceive()
-			.CreateOfflineLoginRewardRecordAsync(
-				Arg.Is(promotionId),
-				Arg.Is(playerCode),
-				Arg.Any<decimal>(),
-				Arg.Any<decimal>(),
-				Arg.Any<DateTime>(),
+			.CreateOfflineLoginRewardEventAsync(
+				Arg.Is<CreateOfflineLoginRewardEventInfo>(x
+					=> x.PlayerCode == playerCode && x.PromotionId == promotionId),
 				Arg.Any<CancellationToken>());
 
 		_ = fakeDistributeService

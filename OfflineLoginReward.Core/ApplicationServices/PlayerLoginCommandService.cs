@@ -50,14 +50,18 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 			var bonusAmount = settings.BonusAmount;
 			var bucketAmount = bonusAmount * settings.TurnoverMultiple;
 
-			var recordId = await _tgsRepository
-				.CreateOfflineLoginRewardRecordAsync(
-					promotion.Id,
-					command.PlayerCode,
-					bonusAmount,
-					bucketAmount,
-					loggedOn: utcNow,
-					cancellationToken);
+			var rewardId = await _tgsRepository
+				.CreateOfflineLoginRewardEventAsync(
+					new CreateOfflineLoginRewardEventInfo(
+						command.PlayerCode,
+						promotion.Id,
+						command.BrandId,
+						bonusAmount,
+						bucketAmount,
+						utcNow),
+					cancellationToken)
+				.ConfigureAwait(false);
+
 
 			var plan = await _distributeService
 				.GetDistributePlanInfoAsync(promotion.Id, cancellationToken)
@@ -69,7 +73,7 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 					command.PlayerCode,
 					bonusAmount,
 					bucketAmount,
-					recordId,
+					rewardId,
 					cancellationToken)
 				.ConfigureAwait(false);
 		}
