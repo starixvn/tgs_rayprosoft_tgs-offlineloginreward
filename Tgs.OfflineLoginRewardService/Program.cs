@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Tgs.OfflineLoginReward.MessageQueue;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +12,11 @@ builder.Logging
 	.AddConsole();
 
 builder.Services
-	.AddOfflineLoginRewardCore();
+	.AddOfflineLoginRewardCore()
+	.AddOfflineLoginRewardRepositories((_, contextBuilder) 
+		=> contextBuilder.UseNpgsql(builder.Configuration.GetConnectionString("Tgs")!))
+	.AddPromotionClientServices((options, _) =>
+		options.Url = builder.Configuration.GetValue<Uri>("OfflineLoginReward:PromotionBaseUrl")!);
 
 builder.Services
 	.AddMessageQueue()

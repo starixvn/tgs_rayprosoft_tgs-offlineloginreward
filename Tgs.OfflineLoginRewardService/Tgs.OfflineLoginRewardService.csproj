@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OfflineLoginReward.Core\OfflineLoginReward.Core.csproj" />
+    <ProjectReference Include="..\OfflineLoginReward.Repositories\OfflineLoginReward.Repositories.csproj" />
   </ItemGroup>
 
 
