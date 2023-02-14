@@ -47,6 +47,16 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 			if (settings is null || !settings.PlayerCodes.Contains(command.PlayerCode))
 				continue;
 
+			var rewardInfo = await _tgsRepository
+				.GetOfflineLoginRewardEventAsync(
+					command.PlayerCode, 
+					promotion.Id, 
+					cancellationToken)
+				.ConfigureAwait(false);
+			
+			if (rewardInfo is not null)
+				continue;
+			
 			var bonusAmount = settings.BonusAmount;
 			var bucketAmount = bonusAmount * settings.TurnoverMultiple;
 

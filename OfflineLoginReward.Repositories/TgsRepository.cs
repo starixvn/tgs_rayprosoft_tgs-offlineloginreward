@@ -1,4 +1,5 @@
-﻿using Tgs.OfflineLoginReward.Repositories.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Tgs.OfflineLoginReward.Repositories.Entities;
 using Tgs.SerialNumberGenerator;
 
 namespace Tgs.OfflineLoginReward.Repositories;
@@ -41,4 +42,24 @@ internal class TgsRepository : ITgsRepository
 
 		return eventId;
 	}
+
+	public async ValueTask<OfflineLoginRewardEventInfo?> GetOfflineLoginRewardEventAsync(
+		string playerCode, 
+		Guid promotionId,
+		CancellationToken cancellationToken = default) 
+		=> await _tgsContext.OfflineLoginRewardEvents
+			.Where(x => 
+				x.PlayerCode == playerCode && 
+				x.PromotionId == promotionId)
+			.Select(x => new OfflineLoginRewardEventInfo(
+				x.Id,
+				x.PlayerCode,
+				x.PromotionId,
+				x.BrandId,
+				x.Bonus,
+				x.Bucket,
+				x.LoggedOn,
+				x.CreatedOn))
+			.FirstOrDefaultAsync(cancellationToken)
+			.ConfigureAwait(false);
 }

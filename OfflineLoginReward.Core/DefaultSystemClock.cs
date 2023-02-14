@@ -1,6 +1,6 @@
 ﻿namespace Tgs.OfflineLoginReward;
 
-internal class SystemClock : ISystemClock
+internal class DefaultSystemClock : ISystemClock
 {
 	public DateTime UtcNow => DateTime.UtcNow;
 }
