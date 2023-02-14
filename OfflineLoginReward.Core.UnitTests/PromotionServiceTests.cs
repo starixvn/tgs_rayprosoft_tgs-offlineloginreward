@@ -1,10 +1,7 @@
-﻿using System;
-using ExpectedObjects;
+﻿using ExpectedObjects;
 using NSubstitute;
-using NSubstitute.Core;
 using Tgs.OfflineLoginReward;
 using Tgs.Promotion.Clients;
-using Xunit;
 
 namespace OfflineLoginReward.Core.UnitTests;
 

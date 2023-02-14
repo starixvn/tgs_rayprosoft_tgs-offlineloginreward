@@ -1,9 +1,7 @@
-﻿using System;
-using NSubstitute;
+﻿using NSubstitute;
 using Tgs.OfflineLoginReward;
 using Tgs.OfflineLoginReward.ApplicationServices;
 using Tgs.Promotion.Clients;
-using Xunit;
 
 namespace OfflineLoginReward.Core.UnitTests;
 

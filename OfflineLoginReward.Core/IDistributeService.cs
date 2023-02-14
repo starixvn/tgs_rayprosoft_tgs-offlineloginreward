@@ -13,6 +13,6 @@ internal interface IDistributeService
 		string playerCode, 
 		decimal bonusAmount, 
 		decimal bucketAmount, 
-		Guid referenceId, 
+		Guid rewardId, 
 		CancellationToken cancellationToken = default);
 }
