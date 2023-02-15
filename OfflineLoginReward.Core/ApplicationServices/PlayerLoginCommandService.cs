@@ -1,4 +1,5 @@
-﻿using Tgs.ServiceUtility;
+﻿using Tgs.PlayerService.Client;
+using Tgs.ServiceUtility;
 
 namespace Tgs.OfflineLoginReward.ApplicationServices;
 
@@ -6,17 +7,20 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 {
 	private readonly ISystemClock _systemClock;
 	private readonly IPromotionService _promotionService;
+	private readonly IPlayerService _playerService;
 	private readonly IDistributeService _distributeService;
 	private readonly ITgsRepository _tgsRepository;
 
 	public PlayerLoginCommandService(
 		ISystemClock systemClock,
 		IPromotionService promotionService,
+		IPlayerService playerService,
 		IDistributeService distributeService,
 		ITgsRepository tgsRepository)
 	{
 		_systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
 		_promotionService = promotionService ?? throw new ArgumentNullException(nameof(promotionService));
+		_playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
 		_distributeService = distributeService ?? throw new ArgumentNullException(nameof(distributeService));
 		_tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 	}
@@ -25,11 +29,23 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 		PlayerLoginCommand command, 
 		CancellationToken cancellationToken = default)
 	{
+		var playerInfo = await _playerService.GetPlayerInfoAsync(command.PlayerCode, cancellationToken)
+			.ConfigureAwait(false);
+
+		if (playerInfo is null)
+			return;
+
+		var playerStatus = await _playerService.GetPlayerStatusAsync(playerInfo.PlayerCode, cancellationToken)
+			.ConfigureAwait(false);
+
+		if (playerStatus is not PlayerStatus.Enabled)
+			return;
+
 		var utcNow = _systemClock.UtcNow;
 
 		var promotions = await _promotionService
 			.GetOfflineLoginRewardPromotionsAsync(cancellationToken)
-			.Where(p => p.BrandId == command.BrandId 
+			.Where(p => p.BrandId == playerInfo.BrandId 
 			            && p.EventDuring.From <= utcNow 
 			            && p.EventDuring.To > utcNow)
 			.ToArrayAsync(cancellationToken)
@@ -37,7 +53,7 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 
 		if (promotions.Length == 0)
 			return;
-
+		
 		foreach (var promotion in promotions)
 		{
 			var settings = await _promotionService
@@ -65,13 +81,12 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 					new CreateOfflineLoginRewardEventInfo(
 						command.PlayerCode,
 						promotion.Id,
-						command.BrandId,
+						playerInfo.BrandId,
 						bonusAmount,
 						bucketAmount,
 						utcNow),
 					cancellationToken)
 				.ConfigureAwait(false);
-
 
 			var plan = await _distributeService
 				.GetDistributePlanInfoAsync(promotion.Id, cancellationToken)

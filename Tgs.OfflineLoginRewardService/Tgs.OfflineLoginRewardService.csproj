@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Tgs.MessageQueue.Nats" Version="2.1.7" />
+    <PackageReference Include="Tgs.Operator.Client" Version="0.0.1" />
   </ItemGroup>
 
   <ItemGroup>

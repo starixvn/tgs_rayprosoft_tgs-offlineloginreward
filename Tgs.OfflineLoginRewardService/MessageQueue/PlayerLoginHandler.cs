@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Tgs.MessageQueue;
 using Tgs.OfflineLoginReward.ApplicationServices;
+using Tgs.Operator.Client.Protos;
 using Tgs.ServiceUtility;
 
 namespace Tgs.OfflineLoginReward.MessageQueue;
@@ -19,14 +20,14 @@ public class PlayerLoginHandler : IMessageHandler
 		ReadOnlyMemory<byte> data, 
 		CancellationToken cancellationToken = default)
 	{
-		var loginEvent = JsonSerializer.Deserialize<PlayerLoginEvent>(data.Span);
+		var loginEvent = LoggedInEvent.Parser.ParseFrom(data.Span);
 
 		if (loginEvent is null)
 			return;
 		
 		var command = new PlayerLoginCommand(
-			loginEvent.BrandId, 
-			loginEvent.PlayerCode);
+			loginEvent.PlayerCode,
+			loginEvent.LoggedInTime.ToDateTime());
 
 		await _commandService
 			.ExecuteAsync(command, cancellationToken)

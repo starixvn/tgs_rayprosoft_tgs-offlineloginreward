@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
 		=> services
 			.RegisterAllServiceUtilityTypes(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient)
 			.AddTransient<IPromotionService, PromotionService>()
+			.AddTransient<IPlayerService, PlayerService>()
 			.AddTransient<IDistributeService, DistributeService>()
 			.AddSingleton<ISystemClock, DefaultSystemClock>();
 }
