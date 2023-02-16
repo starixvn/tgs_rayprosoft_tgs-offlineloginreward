@@ -12,5 +12,7 @@ public static class ServiceCollectionExtensions
 		=> services
 			.Decorate<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>,
 				CachedOfflineLoginRewardPromotionListQueryService>()
-			.Decorate<IGetService<GetPlayerInfoQuery, PlayerInfo?>, GetCachedPlayerInfoQueryService>();
+			.Decorate<IGetService<GetPlayerInfoQuery, PlayerInfo?>, GetCachedPlayerInfoQueryService>()
+			.Decorate<IGetService<GetPromotionDistributePlanQuery, PromotionDistributePlanInfo>,
+				GetCachedPromotionDistributePlanQueryService>();
 }

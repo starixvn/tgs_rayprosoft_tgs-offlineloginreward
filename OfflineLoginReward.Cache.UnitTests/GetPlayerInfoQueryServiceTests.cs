@@ -4,7 +4,6 @@ using NSubstitute;
 using Tgs.OfflineLoginReward.ApplicationServices;
 using Tgs.OfflineLoginReward.Cache;
 using Tgs.PlayerService.Client;
-using Tgs.Promotion.Clients;
 using Tgs.ServiceUtility;
 
 namespace OfflineLoginReward.Cache.UnitTests;

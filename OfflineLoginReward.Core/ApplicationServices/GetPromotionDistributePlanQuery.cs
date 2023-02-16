@@ -1,4 +1,4 @@
 ﻿namespace Tgs.OfflineLoginReward.ApplicationServices;
 
-internal record GetPromotionDistributePlanQuery(
+public record GetPromotionDistributePlanQuery(
 	Guid PromotionId);
