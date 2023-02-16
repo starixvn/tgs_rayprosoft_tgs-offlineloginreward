@@ -18,12 +18,12 @@ public class OfflineLoginRewardUnitTests
 		var fakePromotionSettingsQueryService =
 			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
-		var fakeTgsRepository = Substitute.For<ITgsRepository>();
+		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
 
 		var sut = new PlayerLoginRewardCommandService(fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
-			fakeDistributeService,
-			fakeTgsRepository);
+			fakeDistributeService, 
+			fakeEventService);
 
 		var now = DateTime.UtcNow;
 
@@ -59,7 +59,7 @@ public class OfflineLoginRewardUnitTests
 				Arg.Any<CancellationToken>())
 			.Returns(settings);
 
-		_ = fakeTgsRepository.GetOfflineLoginRewardEventAsync(
+		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
 				Arg.Is(playerCode),
 				Arg.Is(promotion.Id),
 				Arg.Any<CancellationToken>())
@@ -75,7 +75,7 @@ public class OfflineLoginRewardUnitTests
 			10m,
 			now);
 
-		_ = fakeTgsRepository
+		_ = fakeEventService
 			.CreateOfflineLoginRewardEventAsync(
 				Arg.Is(createEventInfo),
 				Arg.Any<CancellationToken>())
@@ -88,7 +88,7 @@ public class OfflineLoginRewardUnitTests
 
 		await sut.ExecuteAsync(command);
 
-		_ = fakeTgsRepository
+		_ = fakeEventService
 			.Received(1)
 			.CreateOfflineLoginRewardEventAsync(
 				Arg.Is(createEventInfo),
@@ -115,22 +115,16 @@ public class OfflineLoginRewardUnitTests
 		var fakePromotionSettingsQueryService =
 			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
-		var fakeTgsRepository = Substitute.For<ITgsRepository>();
+		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
 
 		var sut = new PlayerLoginRewardCommandService(fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
-			fakeDistributeService,
-			fakeTgsRepository);
+			fakeDistributeService, 
+			fakeEventService);
 
 		var now = DateTime.UtcNow;
 		var brandId = Guid.NewGuid();
 		var playerCode = "player1";
-
-		var playerInfo = new PlayerInfo
-		{
-			BrandId = brandId,
-			PlayerCode = playerCode
-		};
 
 		var promotionId = Guid.NewGuid();
 
@@ -168,7 +162,7 @@ public class OfflineLoginRewardUnitTests
 
 		await sut.ExecuteAsync(command);
 
-		_ = fakeTgsRepository
+		_ = fakeEventService
 			.DidNotReceive()
 			.CreateOfflineLoginRewardEventAsync(
 				Arg.Is<CreateOfflineLoginRewardEventInfo>(x
@@ -191,22 +185,16 @@ public class OfflineLoginRewardUnitTests
 		var fakePromotionSettingsQueryService =
 			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
-		var fakeTgsRepository = Substitute.For<ITgsRepository>();
+		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
 
 		var sut = new PlayerLoginRewardCommandService(fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
 			fakeDistributeService,
-			fakeTgsRepository);
+			fakeEventService);
 
 		var now = DateTime.UtcNow;
 		var brandId = Guid.NewGuid();
 		var playerCode = "player1";
-
-		var playerInfo = new PlayerInfo
-		{
-			BrandId = brandId,
-			PlayerCode = playerCode
-		};
 
 		var promotionId = Guid.NewGuid();
 
@@ -230,7 +218,7 @@ public class OfflineLoginRewardUnitTests
 				Arg.Is(new GetOfflineLoginRewardSettingsQuery(promotionId)),
 				Arg.Any<CancellationToken>());
 
-		_ = fakeTgsRepository
+		_ = fakeEventService
 			.DidNotReceive()
 			.CreateOfflineLoginRewardEventAsync(
 				Arg.Is<CreateOfflineLoginRewardEventInfo>(x
@@ -253,12 +241,12 @@ public class OfflineLoginRewardUnitTests
 		var fakePromotionSettingsQueryService =
 			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
-		var fakeTgsRepository = Substitute.For<ITgsRepository>();
+		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
 
 		var sut = new PlayerLoginRewardCommandService(fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
- 			fakeDistributeService,
-			fakeTgsRepository);
+ 			fakeDistributeService, 
+			fakeEventService);
 
 		var now = DateTime.UtcNow;
 		var brandId = Guid.NewGuid();
@@ -303,7 +291,7 @@ public class OfflineLoginRewardUnitTests
 				Arg.Any<CancellationToken>())
 			.Returns(settings);
 
-		_ = fakeTgsRepository.GetOfflineLoginRewardEventAsync(
+		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
 			Arg.Is(playerCode),
 			Arg.Is(promotionId),
 			Arg.Any<CancellationToken>())
@@ -316,7 +304,7 @@ public class OfflineLoginRewardUnitTests
 
 		await sut.ExecuteAsync(command);
 
-		_ = fakeTgsRepository
+		_ = fakeEventService
 			.DidNotReceive()
 			.CreateOfflineLoginRewardEventAsync(
 				Arg.Is<CreateOfflineLoginRewardEventInfo>(x

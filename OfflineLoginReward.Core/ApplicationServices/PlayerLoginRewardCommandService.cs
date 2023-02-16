@@ -8,18 +8,18 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 	private readonly IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo> _promotionQueryService;
 	private readonly IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?> _promotionSettingsQueryService;
 	private readonly ICommandService<DistributeBonusCommand> _distributeService;
-	private readonly ITgsRepository _tgsRepository;
+	private readonly IOfflineLoginRewardEventService _eventService;
 
 	public PlayerLoginRewardCommandService(
 		IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo> promotionListQueryService,
 		IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?> promotionSettingsQueryService,
 		ICommandService<DistributeBonusCommand> distributeService,
-		ITgsRepository tgsRepository)
+		IOfflineLoginRewardEventService eventService)
 	{
 		_promotionQueryService = promotionListQueryService ?? throw new ArgumentNullException(nameof(promotionListQueryService));
 		_promotionSettingsQueryService = promotionSettingsQueryService ?? throw new ArgumentNullException(nameof(promotionSettingsQueryService));
 		_distributeService = distributeService ?? throw new ArgumentNullException(nameof(distributeService));
-		_tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
+		_eventService = eventService ?? throw new ArgumentNullException(nameof(eventService));
 	}
 
 	public async ValueTask ExecuteAsync(
@@ -44,7 +44,7 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 			if (settings is null || !settings.PlayerCodes.Contains(command.PlayerCode))
 				continue;
 
-			var rewardInfo = await _tgsRepository
+			var rewardInfo = await _eventService
 				.GetOfflineLoginRewardEventAsync(
 					command.PlayerCode, 
 					promotion.Id, 
@@ -57,7 +57,7 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 			var bonusAmount = settings.BonusAmount;
 			var bucketAmount = bonusAmount * settings.TurnoverMultiple;
 
-			var rewardId = await _tgsRepository
+			var rewardId = await _eventService
 				.CreateOfflineLoginRewardEventAsync(
 					new CreateOfflineLoginRewardEventInfo(
 						command.PlayerCode,
