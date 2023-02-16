@@ -1,4 +1,5 @@
 ﻿using Tgs.PlayerService.Client;
+using Tgs.Promotion.Clients;
 using Tgs.ServiceUtility;
 
 namespace Tgs.OfflineLoginReward.ApplicationServices;
@@ -6,21 +7,25 @@ namespace Tgs.OfflineLoginReward.ApplicationServices;
 internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 {
 	private readonly ISystemClock _systemClock;
-	private readonly IPromotionService _promotionService;
 	private readonly IPlayerService _playerService;
+	private readonly IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo> _promotionQueryService;
+	private readonly IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?> _promotionSettingsQueryService;
+
 	private readonly ICommandService<DistributeBonusCommand> _distributeService;
 	private readonly ITgsRepository _tgsRepository;
 
 	public PlayerLoginCommandService(
 		ISystemClock systemClock,
-		IPromotionService promotionService,
 		IPlayerService playerService,
+		IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo> promotionListQueryService,
+		IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?> promotionSettingsQueryService,
 		ICommandService<DistributeBonusCommand> distributeService,
 		ITgsRepository tgsRepository)
 	{
 		_systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
-		_promotionService = promotionService ?? throw new ArgumentNullException(nameof(promotionService));
 		_playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
+		_promotionQueryService = promotionListQueryService ?? throw new ArgumentNullException(nameof(promotionListQueryService));
+		_promotionSettingsQueryService = promotionSettingsQueryService ?? throw new ArgumentNullException(nameof(promotionSettingsQueryService));
 		_distributeService = distributeService ?? throw new ArgumentNullException(nameof(distributeService));
 		_tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
 	}
@@ -43,8 +48,8 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 
 		var utcNow = _systemClock.UtcNow;
 
-		var promotions = await _promotionService
-			.GetOfflineLoginRewardPromotionsAsync(cancellationToken)
+		var promotions = await _promotionQueryService
+			.QueryAsync(new(), cancellationToken)
 			.Where(p => p.BrandId == playerInfo.BrandId 
 			            && p.EventDuring.From <= utcNow 
 			            && p.EventDuring.To > utcNow)
@@ -56,8 +61,9 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 		
 		foreach (var promotion in promotions)
 		{
-			var settings = await _promotionService
-				.GetOfflineLoginRewardSettingsAsync(promotion.Id, cancellationToken)
+			var settings = await _promotionSettingsQueryService.GetAsync(
+					new GetOfflineLoginRewardSettingsQuery(promotion.Id),
+					cancellationToken)
 				.ConfigureAwait(false);
 
 			if (settings is null || !settings.PlayerCodes.Contains(command.PlayerCode))

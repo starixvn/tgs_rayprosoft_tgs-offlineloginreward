@@ -8,7 +8,6 @@ public static class ServiceCollectionExtensions
 	public static IServiceCollection AddOfflineLoginRewardCore(this IServiceCollection services)
 		=> services
 			.RegisterAllServiceUtilityTypes(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient)
-			.AddTransient<IPromotionService, PromotionService>()
 			.AddTransient<IPlayerService, PlayerService>()
 			.AddSingleton<ISystemClock, DefaultSystemClock>();
 }
