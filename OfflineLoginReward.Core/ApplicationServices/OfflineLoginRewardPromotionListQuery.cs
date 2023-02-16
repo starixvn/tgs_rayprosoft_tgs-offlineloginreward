@@ -1,3 +1,3 @@
 ﻿namespace Tgs.OfflineLoginReward.ApplicationServices;
 
-internal record OfflineLoginRewardPromotionListQuery;
+public record OfflineLoginRewardPromotionListQuery;

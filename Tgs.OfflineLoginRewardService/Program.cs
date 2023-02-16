@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Tgs.OfflineLoginReward.MessageQueue;
 
@@ -19,6 +18,10 @@ builder.Services
 		options.Url = builder.Configuration.GetValue<Uri>("OfflineLoginReward:PromotionBaseUrl")!)
 	.AddPlayerServiceClient((options, _) =>
 		options.BaseUrl = builder.Configuration.GetValue<Uri>("OfflineLoginReward:PlayerServiceBaseUrl")!);
+
+builder.Services
+	.AddMemoryCache()
+	.AddOfflineLoginRewardCache();
 
 builder.Services
 	.AddMessageQueue()

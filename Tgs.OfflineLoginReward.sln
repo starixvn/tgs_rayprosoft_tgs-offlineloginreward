@@ -11,7 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.OfflineLoginRewardServi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfflineLoginReward.Core.UnitTests", "OfflineLoginReward.Core.UnitTests\OfflineLoginReward.Core.UnitTests.csproj", "{E877BCCC-8D05-4813-ADAA-5E78E4264BEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfflineLoginReward.Repositories", "OfflineLoginReward.Repositories\OfflineLoginReward.Repositories.csproj", "{79DD3323-E119-4AAD-A1F5-4EA8910C7FFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfflineLoginReward.Repositories", "OfflineLoginReward.Repositories\OfflineLoginReward.Repositories.csproj", "{79DD3323-E119-4AAD-A1F5-4EA8910C7FFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfflineLoginReward.Cache", "OfflineLoginReward.Cache\OfflineLoginReward.Cache.csproj", "{B05EBCFC-CB78-4A15-8907-BBD164B04BA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfflineLoginReward.Cache.UnitTests", "OfflineLoginReward.Cache.UnitTests\OfflineLoginReward.Cache.UnitTests.csproj", "{19CC21B2-0EAF-4FFA-B751-2F4F87ADE34A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{79DD3323-E119-4AAD-A1F5-4EA8910C7FFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79DD3323-E119-4AAD-A1F5-4EA8910C7FFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79DD3323-E119-4AAD-A1F5-4EA8910C7FFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B05EBCFC-CB78-4A15-8907-BBD164B04BA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B05EBCFC-CB78-4A15-8907-BBD164B04BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B05EBCFC-CB78-4A15-8907-BBD164B04BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B05EBCFC-CB78-4A15-8907-BBD164B04BA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19CC21B2-0EAF-4FFA-B751-2F4F87ADE34A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19CC21B2-0EAF-4FFA-B751-2F4F87ADE34A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19CC21B2-0EAF-4FFA-B751-2F4F87ADE34A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19CC21B2-0EAF-4FFA-B751-2F4F87ADE34A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
