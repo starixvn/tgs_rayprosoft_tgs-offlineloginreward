@@ -13,7 +13,6 @@ public class OfflineLoginRewardUnitTests
 	public async Task 玩家登入時_未派發過彩金_要派發彩金()
 	{
 		var fakeSystemClock = Substitute.For<ISystemClock>();
-		var fakePlayerService = Substitute.For<IPlayerService>();
 		var fakePromotionQueryService =
 			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
 		var fakePromotionSettingsQueryService =
@@ -21,10 +20,9 @@ public class OfflineLoginRewardUnitTests
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-		var sut = new PlayerLoginCommandService(
+		var sut = new PlayerLoginRewardCommandService(
 			fakeSystemClock,
-			fakePlayerService,
-			fakePromotionQueryService, 
+			fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
 			fakeDistributeService,
 			fakeTgsRepository);
@@ -33,12 +31,6 @@ public class OfflineLoginRewardUnitTests
 
 		var brandId = Guid.NewGuid();
 		var playerCode = "player1";
-
-		var playerInfo = new PlayerInfo
-		{
-			BrandId = brandId,
-			PlayerCode = playerCode
-		};
 
 		var promotionId = Guid.NewGuid();
 
@@ -53,21 +45,11 @@ public class OfflineLoginRewardUnitTests
 		};
 
 		var settings = new OfflineLoginRewardSettings(
-			10m, 
-			1m, 
+			10m,
+			1m,
 			new[] { playerCode });
 
 		_ = fakeSystemClock.UtcNow.Returns(now);
-
-		_ = fakePlayerService.GetPlayerInfoAsync(
-				Arg.Is(playerCode),
-				Arg.Any<CancellationToken>())
-			.Returns(playerInfo);
-
-		_ = fakePlayerService.GetPlayerStatusAsync(
-				Arg.Is(playerCode),
-				Arg.Any<CancellationToken>())
-			.Returns(PlayerStatus.Enabled);
 
 		_ = fakePromotionQueryService.QueryAsync(
 				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
@@ -101,7 +83,10 @@ public class OfflineLoginRewardUnitTests
 				Arg.Any<CancellationToken>())
 			.Returns(recordId);
 
-		var command = new PlayerLoginCommand(playerCode, now);
+		var command = new PlayerLoginRewardCommand(
+			playerCode,
+			brandId,
+			now);
 
 		await sut.ExecuteAsync(command);
 
@@ -127,7 +112,6 @@ public class OfflineLoginRewardUnitTests
 	public async Task 玩家登入時_沒有在活動資格名單內_不派發彩金()
 	{
 		var fakeSystemClock = Substitute.For<ISystemClock>();
-		var fakePlayerService = Substitute.For<IPlayerService>();
 		var fakePromotionQueryService =
 			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
 		var fakePromotionSettingsQueryService =
@@ -135,9 +119,8 @@ public class OfflineLoginRewardUnitTests
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-		var sut = new PlayerLoginCommandService(
+		var sut = new PlayerLoginRewardCommandService(
 			fakeSystemClock,
-			fakePlayerService,
 			fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
 			fakeDistributeService,
@@ -172,34 +155,27 @@ public class OfflineLoginRewardUnitTests
 
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
-		_ = fakePlayerService.GetPlayerInfoAsync(
-			Arg.Is(playerCode),
-			Arg.Any<CancellationToken>())
-			.Returns(playerInfo);
-
-		_ = fakePlayerService.GetPlayerStatusAsync(
-				Arg.Is(playerCode),
-				Arg.Any<CancellationToken>())
-			.Returns(PlayerStatus.Enabled);
-		
 		_ = fakePromotionQueryService.QueryAsync(
 				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
-		
+
 		_ = fakePromotionSettingsQueryService.GetAsync(
 				Arg.Is(new GetOfflineLoginRewardSettingsQuery(promotionId)),
 				Arg.Any<CancellationToken>())
 			.Returns(settings);
 
-		var command = new PlayerLoginCommand(playerCode, now);
+		var command = new PlayerLoginRewardCommand(
+			playerCode,
+			brandId,
+			now);
 
 		await sut.ExecuteAsync(command);
 
 		_ = fakeTgsRepository
 			.DidNotReceive()
 			.CreateOfflineLoginRewardEventAsync(
-				Arg.Is<CreateOfflineLoginRewardEventInfo>(x 
+				Arg.Is<CreateOfflineLoginRewardEventInfo>(x
 					=> x.PlayerCode == playerCode && x.PromotionId == promotionId),
 				Arg.Any<CancellationToken>());
 
@@ -214,7 +190,6 @@ public class OfflineLoginRewardUnitTests
 	public async Task 玩家登入時_找不到平台設定的活動_不派發彩金()
 	{
 		var fakeSystemClock = Substitute.For<ISystemClock>();
-		var fakePlayerService = Substitute.For<IPlayerService>();
 		var fakePromotionQueryService =
 			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
 		var fakePromotionSettingsQueryService =
@@ -222,10 +197,9 @@ public class OfflineLoginRewardUnitTests
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-		var sut = new PlayerLoginCommandService(
+		var sut = new PlayerLoginRewardCommandService(
 			fakeSystemClock,
-			fakePlayerService, 
-			fakePromotionQueryService, 
+			fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
 			fakeDistributeService,
 			fakeTgsRepository);
@@ -239,28 +213,20 @@ public class OfflineLoginRewardUnitTests
 			BrandId = brandId,
 			PlayerCode = playerCode
 		};
-		
+
 		var promotionId = Guid.NewGuid();
 
 		_ = fakeSystemClock.UtcNow.Returns(now);
-
-		_ = fakePlayerService.GetPlayerInfoAsync(
-				Arg.Is(playerCode),
-			Arg.Any<CancellationToken>())
-			.Returns(playerInfo);
-		
-		_ = fakePlayerService.GetPlayerStatusAsync(
-				Arg.Is(playerCode),
-				Arg.Any<CancellationToken>())
-			.Returns(PlayerStatus.Enabled);
-
 
 		_ = fakePromotionQueryService.QueryAsync(
 				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
 				Arg.Any<CancellationToken>())
 			.Returns(Array.Empty<PromotionMainInfo>().ToAsyncEnumerable());
 
-		var command = new PlayerLoginCommand(playerCode, now);
+		var command = new PlayerLoginRewardCommand(
+			playerCode,
+			brandId,
+			now);
 
 		await sut.ExecuteAsync(command);
 
@@ -269,7 +235,7 @@ public class OfflineLoginRewardUnitTests
 			.GetAsync(
 				Arg.Is(new GetOfflineLoginRewardSettingsQuery(promotionId)),
 				Arg.Any<CancellationToken>());
-		
+
 		_ = fakeTgsRepository
 			.DidNotReceive()
 			.CreateOfflineLoginRewardEventAsync(
@@ -288,7 +254,6 @@ public class OfflineLoginRewardUnitTests
 	public async Task 玩家登入時_已派發過彩金_不再派發彩金()
 	{
 		var fakeSystemClock = Substitute.For<ISystemClock>();
-		var fakePlayerService = Substitute.For<IPlayerService>();
 		var fakePromotionQueryService =
 			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
 		var fakePromotionSettingsQueryService =
@@ -296,10 +261,9 @@ public class OfflineLoginRewardUnitTests
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-		var sut = new PlayerLoginCommandService(
+		var sut = new PlayerLoginRewardCommandService(
 			fakeSystemClock,
-			fakePlayerService, 
-			fakePromotionQueryService, 
+			fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
  			fakeDistributeService,
 			fakeTgsRepository);
@@ -313,7 +277,7 @@ public class OfflineLoginRewardUnitTests
 			BrandId = brandId,
 			PlayerCode = playerCode
 		};
-		
+
 		var promotionId = Guid.NewGuid();
 
 		var promotion = new PromotionMainInfo
@@ -343,11 +307,6 @@ public class OfflineLoginRewardUnitTests
 
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
-		_ = fakePlayerService.GetPlayerInfoAsync(
-				Arg.Is(playerCode),
-				Arg.Any<CancellationToken>())
-			.Returns(playerInfo);
-
 		_ = fakePromotionQueryService.QueryAsync(
 				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
 				Arg.Any<CancellationToken>())
@@ -364,77 +323,12 @@ public class OfflineLoginRewardUnitTests
 			Arg.Any<CancellationToken>())
 			.Returns(rewardEventInfo);
 
-		var command = new PlayerLoginCommand(playerCode, now);
+		var command = new PlayerLoginRewardCommand(
+			playerCode,
+			brandId,
+			now);
 
 		await sut.ExecuteAsync(command);
-
-		_ = fakeTgsRepository
-			.DidNotReceive()
-			.CreateOfflineLoginRewardEventAsync(
-				Arg.Is<CreateOfflineLoginRewardEventInfo>(x
-					=> x.PlayerCode == playerCode && x.PromotionId == promotionId),
-				Arg.Any<CancellationToken>());
-
-		_ = fakeDistributeService
-			.DidNotReceive()
-			.ExecuteAsync(
-				Arg.Any<DistributeBonusCommand>(),
-				Arg.Any<CancellationToken>());
-	}
-
-	[Fact]
-	public async Task 玩家登入時_非有效玩家不派發彩金()
-	{
-		var fakeSystemClock = Substitute.For<ISystemClock>();
-		var fakePlayerService = Substitute.For<IPlayerService>();
-		var fakePromotionQueryService =
-			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
-		var fakePromotionSettingsQueryService =
-			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
-		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
-		var fakeTgsRepository = Substitute.For<ITgsRepository>();
-
-		var sut = new PlayerLoginCommandService(
-			fakeSystemClock,
-			fakePlayerService, 
-			fakePromotionQueryService, 
-			fakePromotionSettingsQueryService,
-			fakeDistributeService,
-			fakeTgsRepository);
-
-		var now = DateTime.UtcNow;
-		var brandId = Guid.NewGuid();
-		var playerCode = "player1";
-
-		var playerInfo = new PlayerInfo
-		{
-			BrandId = brandId,
-			PlayerCode = playerCode
-		};
-
-		var promotionId = Guid.NewGuid();
-
-		_ = fakeSystemClock.UtcNow.Returns(now);
-
-		_ = fakePlayerService.GetPlayerInfoAsync(
-				Arg.Is(playerCode),
-				Arg.Any<CancellationToken>())
-			.Returns(playerInfo);
-
-		_ = fakePlayerService.GetPlayerStatusAsync(
-				Arg.Is(playerCode),
-				Arg.Any<CancellationToken>())
-			.Returns(PlayerStatus.RegisterUndone);
-		
-		var command = new PlayerLoginCommand(playerCode, now);
-
-		await sut.ExecuteAsync(command);
-
-		_ = fakePromotionQueryService
-			.DidNotReceive()
-			.QueryAsync(
-				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
-				Arg.Any<CancellationToken>());
 
 		_ = fakeTgsRepository
 			.DidNotReceive()

@@ -1,5 +1,6 @@
 ﻿namespace Tgs.OfflineLoginReward.ApplicationServices;
 
-public record PlayerLoginCommand(
+public record PlayerLoginRewardCommand(
 	string PlayerCode,
+	Guid BrandId,
 	DateTime LoggedInOn);
