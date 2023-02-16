@@ -14,15 +14,13 @@ public class OfflineLoginRewardUnitTests
 	{
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePromotionQueryService =
-			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
+			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
 		var fakePromotionSettingsQueryService =
 			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-		var sut = new PlayerLoginRewardCommandService(
-			fakeSystemClock,
-			fakePromotionQueryService,
+		var sut = new PlayerLoginRewardCommandService(fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
 			fakeDistributeService,
 			fakeTgsRepository);
@@ -52,7 +50,7 @@ public class OfflineLoginRewardUnitTests
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
+				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery(brandId)),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
 
@@ -113,15 +111,13 @@ public class OfflineLoginRewardUnitTests
 	{
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePromotionQueryService =
-			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
+			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
 		var fakePromotionSettingsQueryService =
 			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-		var sut = new PlayerLoginRewardCommandService(
-			fakeSystemClock,
-			fakePromotionQueryService,
+		var sut = new PlayerLoginRewardCommandService(fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
 			fakeDistributeService,
 			fakeTgsRepository);
@@ -156,7 +152,7 @@ public class OfflineLoginRewardUnitTests
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
+				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery(brandId)),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
 
@@ -191,15 +187,13 @@ public class OfflineLoginRewardUnitTests
 	{
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePromotionQueryService =
-			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
+			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
 		var fakePromotionSettingsQueryService =
 			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-		var sut = new PlayerLoginRewardCommandService(
-			fakeSystemClock,
-			fakePromotionQueryService,
+		var sut = new PlayerLoginRewardCommandService(fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
 			fakeDistributeService,
 			fakeTgsRepository);
@@ -219,7 +213,7 @@ public class OfflineLoginRewardUnitTests
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
+				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery(brandId)),
 				Arg.Any<CancellationToken>())
 			.Returns(Array.Empty<PromotionMainInfo>().ToAsyncEnumerable());
 
@@ -255,15 +249,13 @@ public class OfflineLoginRewardUnitTests
 	{
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePromotionQueryService =
-			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
+			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
 		var fakePromotionSettingsQueryService =
 			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
-		var sut = new PlayerLoginRewardCommandService(
-			fakeSystemClock,
-			fakePromotionQueryService,
+		var sut = new PlayerLoginRewardCommandService(fakePromotionQueryService,
 			fakePromotionSettingsQueryService,
  			fakeDistributeService,
 			fakeTgsRepository);
@@ -271,12 +263,6 @@ public class OfflineLoginRewardUnitTests
 		var now = DateTime.UtcNow;
 		var brandId = Guid.NewGuid();
 		var playerCode = "player1";
-
-		var playerInfo = new PlayerInfo
-		{
-			BrandId = brandId,
-			PlayerCode = playerCode
-		};
 
 		var promotionId = Guid.NewGuid();
 
@@ -308,7 +294,7 @@ public class OfflineLoginRewardUnitTests
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
+				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery(brandId)),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
 

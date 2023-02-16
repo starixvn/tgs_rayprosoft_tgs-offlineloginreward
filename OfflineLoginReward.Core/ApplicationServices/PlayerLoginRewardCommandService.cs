@@ -5,21 +5,17 @@ namespace Tgs.OfflineLoginReward.ApplicationServices;
 
 internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewardCommand>
 {
-	private readonly ISystemClock _systemClock;
-	private readonly IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo> _promotionQueryService;
+	private readonly IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo> _promotionQueryService;
 	private readonly IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?> _promotionSettingsQueryService;
-
 	private readonly ICommandService<DistributeBonusCommand> _distributeService;
 	private readonly ITgsRepository _tgsRepository;
 
 	public PlayerLoginRewardCommandService(
-		ISystemClock systemClock,
-		IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo> promotionListQueryService,
+		IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo> promotionListQueryService,
 		IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?> promotionSettingsQueryService,
 		ICommandService<DistributeBonusCommand> distributeService,
 		ITgsRepository tgsRepository)
 	{
-		_systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
 		_promotionQueryService = promotionListQueryService ?? throw new ArgumentNullException(nameof(promotionListQueryService));
 		_promotionSettingsQueryService = promotionSettingsQueryService ?? throw new ArgumentNullException(nameof(promotionSettingsQueryService));
 		_distributeService = distributeService ?? throw new ArgumentNullException(nameof(distributeService));
@@ -30,13 +26,8 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 		PlayerLoginRewardCommand command, 
 		CancellationToken cancellationToken = default)
 	{
-		var utcNow = _systemClock.UtcNow;
-
 		var promotions = await _promotionQueryService
-			.QueryAsync(new(), cancellationToken)
-			.Where(p => p.BrandId == command.BrandId 
-			            && p.EventDuring.From <= utcNow 
-			            && p.EventDuring.To > utcNow)
+			.QueryAsync(new(command.BrandId), cancellationToken)
 			.ToArrayAsync(cancellationToken)
 			.ConfigureAwait(false);
 
@@ -74,7 +65,7 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 						command.BrandId,
 						bonusAmount,
 						bucketAmount,
-						utcNow),
+						command.LoggedInOn),
 					cancellationToken)
 				.ConfigureAwait(false);
 
