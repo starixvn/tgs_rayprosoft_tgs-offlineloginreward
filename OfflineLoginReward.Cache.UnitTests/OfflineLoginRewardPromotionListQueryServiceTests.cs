@@ -8,10 +8,10 @@ using Tgs.ServiceUtility;
 
 namespace OfflineLoginReward.Cache.UnitTests;
 
-public class CachedOfflineLoginRewardPromotionListQueryServiceTests
+public class OfflineLoginRewardPromotionListQueryServiceTests
 {
 	[Fact]
-	public async Task 已Cache資料()
+	public async Task 已快取資料()
 	{
 		var fakeMemoryCache = new MemoryCache(
 			new OptionsWrapper<MemoryCacheOptions>(
@@ -64,7 +64,7 @@ public class CachedOfflineLoginRewardPromotionListQueryServiceTests
 	}
 
 	[Fact]
-	public async Task 尚未有Cache資料()
+	public async Task 尚未有快取資料()
 	{
 		var fakeMemoryCache = new MemoryCache(
 			new OptionsWrapper<MemoryCacheOptions>(
