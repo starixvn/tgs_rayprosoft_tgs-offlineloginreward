@@ -10,6 +10,5 @@ public static class ServiceCollectionExtensions
 			.RegisterAllServiceUtilityTypes(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient)
 			.AddTransient<IPromotionService, PromotionService>()
 			.AddTransient<IPlayerService, PlayerService>()
-			.AddTransient<IDistributeService, DistributeService>()
 			.AddSingleton<ISystemClock, DefaultSystemClock>();
 }

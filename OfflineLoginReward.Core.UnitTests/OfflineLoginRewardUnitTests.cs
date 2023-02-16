@@ -3,6 +3,7 @@ using Tgs.OfflineLoginReward;
 using Tgs.OfflineLoginReward.ApplicationServices;
 using Tgs.PlayerService.Client;
 using Tgs.Promotion.Clients;
+using Tgs.ServiceUtility;
 
 namespace OfflineLoginReward.Core.UnitTests;
 
@@ -14,7 +15,7 @@ public class OfflineLoginRewardUnitTests
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePromotionService = Substitute.For<IPromotionService>();
 		var fakePlayerService = Substitute.For<IPlayerService>();
-		var fakeDistributeService = Substitute.For<IDistributeService>();
+		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
 		var sut = new PlayerLoginCommandService(
@@ -79,11 +80,6 @@ public class OfflineLoginRewardUnitTests
 				Arg.Any<CancellationToken>())
 			.Returns(settings);
 
-		_ = fakeDistributeService.GetDistributePlanInfoAsync(
-				Arg.Is(promotionId),
-				Arg.Any<CancellationToken>())
-			.Returns(distributePlan);
-
 		_ = fakeTgsRepository.GetOfflineLoginRewardEventAsync(
 				Arg.Is(playerCode),
 				Arg.Is(promotion.Id),
@@ -118,12 +114,13 @@ public class OfflineLoginRewardUnitTests
 
 		_ = fakeDistributeService
 			.Received(1)
-			.DistributeBonusAsync(
-				Arg.Is(distributePlan.Id),
-				Arg.Is(playerCode),
-				Arg.Is(10m),
-				Arg.Is(10m),
-				Arg.Is(recordId),
+			.ExecuteAsync(
+				Arg.Is(new DistributeBonusCommand(
+					promotionId,
+					playerCode,
+					10m,
+					10m,
+					recordId)),
 				Arg.Any<CancellationToken>());
 	}
 
@@ -133,7 +130,7 @@ public class OfflineLoginRewardUnitTests
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePromotionService = Substitute.For<IPromotionService>();
 		var fakePlayerService = Substitute.For<IPlayerService>();
-		var fakeDistributeService = Substitute.For<IDistributeService>();
+		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
 		var sut = new PlayerLoginCommandService(
@@ -195,12 +192,6 @@ public class OfflineLoginRewardUnitTests
 
 		await sut.ExecuteAsync(command);
 
-		_ = fakeDistributeService
-			.DidNotReceive()
-			.GetDistributePlanInfoAsync(
-				Arg.Is(promotionId),
-				Arg.Any<CancellationToken>());
-
 		_ = fakeTgsRepository
 			.DidNotReceive()
 			.CreateOfflineLoginRewardEventAsync(
@@ -210,12 +201,8 @@ public class OfflineLoginRewardUnitTests
 
 		_ = fakeDistributeService
 			.DidNotReceive()
-			.DistributeBonusAsync(
-				Arg.Any<Guid>(),
-				Arg.Is(playerCode),
-				Arg.Is(10m),
-				Arg.Is(10m),
-				Arg.Any<Guid>(),
+			.ExecuteAsync(
+				Arg.Any<DistributeBonusCommand>(),
 				Arg.Any<CancellationToken>());
 	}
 
@@ -225,7 +212,7 @@ public class OfflineLoginRewardUnitTests
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePromotionService = Substitute.For<IPromotionService>();
 		var fakePlayerService = Substitute.For<IPlayerService>();
-		var fakeDistributeService = Substitute.For<IDistributeService>();
+		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
 		var sut = new PlayerLoginCommandService(
@@ -273,12 +260,7 @@ public class OfflineLoginRewardUnitTests
 				Arg.Is(promotionId),
 				Arg.Any<CancellationToken>());
 
-		_ = fakeDistributeService
-			.DidNotReceive()
-			.GetDistributePlanInfoAsync(
-				Arg.Is(promotionId),
-				Arg.Any<CancellationToken>());
-
+		
 		_ = fakeTgsRepository
 			.DidNotReceive()
 			.CreateOfflineLoginRewardEventAsync(
@@ -288,12 +270,8 @@ public class OfflineLoginRewardUnitTests
 
 		_ = fakeDistributeService
 			.DidNotReceive()
-			.DistributeBonusAsync(
-				Arg.Any<Guid>(),
-				Arg.Is(playerCode),
-				Arg.Is(10m),
-				Arg.Is(10m),
-				Arg.Any<Guid>(),
+			.ExecuteAsync(
+				Arg.Any<DistributeBonusCommand>(),
 				Arg.Any<CancellationToken>());
 	}
 
@@ -303,7 +281,7 @@ public class OfflineLoginRewardUnitTests
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePromotionService = Substitute.For<IPromotionService>();
 		var fakePlayerService = Substitute.For<IPlayerService>();
-		var fakeDistributeService = Substitute.For<IDistributeService>();
+		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
 		var sut = new PlayerLoginCommandService(
@@ -375,28 +353,17 @@ public class OfflineLoginRewardUnitTests
 		var command = new PlayerLoginCommand(playerCode, now);
 
 		await sut.ExecuteAsync(command);
-
-		_ = fakeDistributeService
-			.DidNotReceive()
-			.GetDistributePlanInfoAsync(
-				Arg.Is(promotionId),
-				Arg.Any<CancellationToken>());
-
+		
 		_ = fakeTgsRepository
 			.DidNotReceive()
 			.CreateOfflineLoginRewardEventAsync(
 				Arg.Is<CreateOfflineLoginRewardEventInfo>(x
 					=> x.PlayerCode == playerCode && x.PromotionId == promotionId),
 				Arg.Any<CancellationToken>());
-
 		_ = fakeDistributeService
 			.DidNotReceive()
-			.DistributeBonusAsync(
-				Arg.Any<Guid>(),
-				Arg.Is(playerCode),
-				Arg.Is(10m),
-				Arg.Is(10m),
-				Arg.Any<Guid>(),
+			.ExecuteAsync(
+				Arg.Any<DistributeBonusCommand>(),
 				Arg.Any<CancellationToken>());
 	}
 
@@ -406,7 +373,7 @@ public class OfflineLoginRewardUnitTests
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePromotionService = Substitute.For<IPromotionService>();
 		var fakePlayerService = Substitute.For<IPlayerService>();
-		var fakeDistributeService = Substitute.For<IDistributeService>();
+		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeTgsRepository = Substitute.For<ITgsRepository>();
 
 		var sut = new PlayerLoginCommandService(
@@ -449,27 +416,16 @@ public class OfflineLoginRewardUnitTests
 			.GetOfflineLoginRewardPromotionsAsync(
 				Arg.Any<CancellationToken>());
 		
-		_ = fakeDistributeService
-			.DidNotReceive()
-			.GetDistributePlanInfoAsync(
-				Arg.Is(promotionId),
-				Arg.Any<CancellationToken>());
-
 		_ = fakeTgsRepository
 			.DidNotReceive()
 			.CreateOfflineLoginRewardEventAsync(
 				Arg.Is<CreateOfflineLoginRewardEventInfo>(x
 					=> x.PlayerCode == playerCode && x.PromotionId == promotionId),
 				Arg.Any<CancellationToken>());
-
 		_ = fakeDistributeService
 			.DidNotReceive()
-			.DistributeBonusAsync(
-				Arg.Any<Guid>(),
-				Arg.Is(playerCode),
-				Arg.Is(10m),
-				Arg.Is(10m),
-				Arg.Any<Guid>(),
+			.ExecuteAsync(
+				Arg.Any<DistributeBonusCommand>(),
 				Arg.Any<CancellationToken>());
 	}
 }

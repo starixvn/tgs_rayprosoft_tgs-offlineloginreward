@@ -8,14 +8,14 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 	private readonly ISystemClock _systemClock;
 	private readonly IPromotionService _promotionService;
 	private readonly IPlayerService _playerService;
-	private readonly IDistributeService _distributeService;
+	private readonly ICommandService<DistributeBonusCommand> _distributeService;
 	private readonly ITgsRepository _tgsRepository;
 
 	public PlayerLoginCommandService(
 		ISystemClock systemClock,
 		IPromotionService promotionService,
 		IPlayerService playerService,
-		IDistributeService distributeService,
+		ICommandService<DistributeBonusCommand> distributeService,
 		ITgsRepository tgsRepository)
 	{
 		_systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
@@ -88,17 +88,14 @@ internal class PlayerLoginCommandService : ICommandService<PlayerLoginCommand>
 					cancellationToken)
 				.ConfigureAwait(false);
 
-			var plan = await _distributeService
-				.GetDistributePlanInfoAsync(promotion.Id, cancellationToken)
-				.ConfigureAwait(false);
-			
-			_ = await _distributeService
-				.DistributeBonusAsync(
-					plan.Id, 
-					command.PlayerCode,
-					bonusAmount,
-					bucketAmount,
-					rewardId,
+			await _distributeService
+				.ExecuteAsync(
+					new DistributeBonusCommand(
+						promotion.Id,
+						command.PlayerCode,
+						bonusAmount,
+						bucketAmount,
+						rewardId),
 					cancellationToken)
 				.ConfigureAwait(false);
 		}
