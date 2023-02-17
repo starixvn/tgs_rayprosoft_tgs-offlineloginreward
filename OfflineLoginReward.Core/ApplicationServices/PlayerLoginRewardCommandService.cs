@@ -53,7 +53,14 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 			
 			if (rewardInfo is not null)
 				continue;
-			
+
+			var isCreateEventProcessing = await _eventService
+				.IsCreateOfflineLoginRewardEventProcessingAsync(command.PlayerCode, promotion.Id, cancellationToken)
+				.ConfigureAwait(false);
+
+			if (isCreateEventProcessing)
+				continue;
+
 			var bonusAmount = settings.BonusAmount;
 			var bucketAmount = bonusAmount * settings.TurnoverMultiple;
 

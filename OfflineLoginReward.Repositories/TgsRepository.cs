@@ -62,4 +62,24 @@ internal class TgsRepository : ITgsRepository
 				x.CreatedOn))
 			.FirstOrDefaultAsync(cancellationToken)
 			.ConfigureAwait(false);
+
+	public async ValueTask<OfflineLoginRewardEventInfo?> GetOfflineLoginRewardEventAsync(
+		Guid eventId, 
+		CancellationToken cancellationToken = default)
+	{
+		var info = await _tgsContext.OfflineLoginRewardEvents.FindAsync(
+			new object[] {eventId}, cancellationToken);
+
+		return info is null
+			? null
+			: new OfflineLoginRewardEventInfo(
+				info.Id,
+				info.PlayerCode,
+				info.PromotionId,
+				info.BrandId,
+				info.Bonus,
+				info.Bucket,
+				info.LoggedOn,
+				info.CreatedOn);
+	}
 }

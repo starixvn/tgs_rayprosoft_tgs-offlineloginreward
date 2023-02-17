@@ -27,7 +27,7 @@ internal class CachedOfflineLoginRewardPromotionListQueryService
 		
 		var promotions = await _memoryCache.GetOrCreateAsync(key, async entry =>
 			{
-				entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+				entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1D);
 
 				return await _sourceService.QueryAsync(query, cancellationToken)
 					.ToArrayAsync(cancellationToken)

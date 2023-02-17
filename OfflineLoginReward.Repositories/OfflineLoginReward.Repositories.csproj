@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1" />
+    <PackageReference Include="StackExchange.Redis" Version="2.6.90" />
     <PackageReference Include="Tgs.SerialNumberGenerator" Version="1.0.0" />
   </ItemGroup>
 

@@ -10,4 +10,9 @@ internal interface IOfflineLoginRewardEventService
 	ValueTask<Guid> CreateOfflineLoginRewardEventAsync(
 		CreateOfflineLoginRewardEventInfo createInfo, 
 		CancellationToken cancellationToken = default);
+
+	ValueTask<bool> IsCreateOfflineLoginRewardEventProcessingAsync(
+		string playerCode,
+		Guid promotionId,
+		CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Tgs.OfflineLoginReward;
 using Tgs.OfflineLoginReward.MessageQueue;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,9 +12,19 @@ builder.Logging
 	.AddConsole();
 
 builder.Services
+	.AddSingleton(sp =>
+	{
+		var redisConnectionString = builder.Configuration.GetConnectionString("Redis")!;
+		return ActivatorUtilities.CreateInstance<RedisConnectionManager>(sp, redisConnectionString);
+	})
 	.AddOfflineLoginRewardCore()
-	.AddOfflineLoginRewardRepositories((_, contextBuilder) 
-		=> contextBuilder.UseNpgsql(builder.Configuration.GetConnectionString("Tgs")!))
+	.AddOfflineLoginRewardRepositories(
+		(_, contextBuilder) => contextBuilder.UseNpgsql(builder.Configuration.GetConnectionString("Tgs")!),
+		sp =>
+		{
+			var redisConnectionManager = sp.GetRequiredService<RedisConnectionManager>();
+			return redisConnectionManager.Database;
+		})
 	.AddPromotionClientServices((options, _) =>
 		options.Url = builder.Configuration.GetValue<Uri>("OfflineLoginReward:PromotionBaseUrl")!)
 	.AddPlayerServiceClient((options, _) =>

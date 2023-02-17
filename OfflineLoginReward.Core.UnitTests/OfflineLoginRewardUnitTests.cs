@@ -65,6 +65,12 @@ public class OfflineLoginRewardUnitTests
 				Arg.Any<CancellationToken>())
 			.Returns((OfflineLoginRewardEventInfo?)null);
 
+		_ = fakeEventService.IsCreateOfflineLoginRewardEventProcessingAsync(
+			Arg.Is(playerCode),
+			Arg.Is(promotionId),
+			Arg.Any<CancellationToken>())
+			.Returns(false);
+
 		var recordId = Guid.NewGuid();
 
 		var createEventInfo = new CreateOfflineLoginRewardEventInfo(
@@ -96,6 +102,109 @@ public class OfflineLoginRewardUnitTests
 
 		_ = fakeDistributeService
 			.Received(1)
+			.ExecuteAsync(
+				Arg.Is(new DistributeBonusCommand(
+					promotionId,
+					playerCode,
+					10m,
+					10m,
+					recordId)),
+				Arg.Any<CancellationToken>());
+	}
+
+	[Fact]
+	public async Task 玩家登入時_若有派發彩金行為進行中_不派發彩金()
+	{
+		var fakeSystemClock = Substitute.For<ISystemClock>();
+		var fakePromotionQueryService =
+			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
+		var fakePromotionSettingsQueryService =
+			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
+		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
+		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
+
+		var sut = new PlayerLoginRewardCommandService(fakePromotionQueryService,
+			fakePromotionSettingsQueryService,
+			fakeDistributeService,
+			fakeEventService);
+
+		var now = DateTime.UtcNow;
+
+		var brandId = Guid.NewGuid();
+		var playerCode = "player1";
+
+		var promotionId = Guid.NewGuid();
+
+		var promotion = new PromotionMainInfo
+		{
+			Id = promotionId,
+			EventDuring = new During(now.AddDays(-1), now.AddDays(1)),
+			Name = "TestPromotion",
+			PromotionType = "OfflineLoginReward",
+			BrandId = brandId,
+			IsAutoSent = true
+		};
+
+		var settings = new OfflineLoginRewardSettings(
+			10m,
+			1m,
+			new[] { playerCode });
+
+		_ = fakeSystemClock.UtcNow.Returns(now);
+
+		_ = fakePromotionQueryService.QueryAsync(
+				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery(brandId)),
+				Arg.Any<CancellationToken>())
+			.Returns(new[] { promotion }.ToAsyncEnumerable());
+
+		_ = fakePromotionSettingsQueryService.GetAsync(
+				Arg.Is(new GetOfflineLoginRewardSettingsQuery(promotionId)),
+				Arg.Any<CancellationToken>())
+			.Returns(settings);
+
+		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
+				Arg.Is(playerCode),
+				Arg.Is(promotion.Id),
+				Arg.Any<CancellationToken>())
+			.Returns((OfflineLoginRewardEventInfo?)null);
+
+		_ = fakeEventService.IsCreateOfflineLoginRewardEventProcessingAsync(
+			Arg.Is(playerCode),
+			Arg.Is(promotionId),
+			Arg.Any<CancellationToken>())
+			.Returns(true);
+
+		var recordId = Guid.NewGuid();
+
+		var createEventInfo = new CreateOfflineLoginRewardEventInfo(
+			playerCode,
+			promotionId,
+			brandId,
+			10m,
+			10m,
+			now);
+
+		_ = fakeEventService
+			.CreateOfflineLoginRewardEventAsync(
+				Arg.Is(createEventInfo),
+				Arg.Any<CancellationToken>())
+			.Returns(recordId);
+
+		var command = new PlayerLoginRewardCommand(
+			playerCode,
+			brandId,
+			now);
+
+		await sut.ExecuteAsync(command);
+
+		_ = fakeEventService
+			.DidNotReceive()
+			.CreateOfflineLoginRewardEventAsync(
+				Arg.Is(createEventInfo),
+				Arg.Any<CancellationToken>());
+
+		_ = fakeDistributeService
+			.DidNotReceive()
 			.ExecuteAsync(
 				Arg.Is(new DistributeBonusCommand(
 					promotionId,
