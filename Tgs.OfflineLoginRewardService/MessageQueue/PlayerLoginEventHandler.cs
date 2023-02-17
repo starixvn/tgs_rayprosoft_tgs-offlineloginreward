@@ -6,13 +6,13 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.OfflineLoginReward.MessageQueue;
 
-public class PlayerLoginHandler : IMessageHandler
+public class PlayerLoginEventHandler : IMessageHandler
 {
 	private readonly IPlayerServiceClient _playerServiceClient;
 	private readonly IGetService<GetPlayerInfoQuery, PlayerInfo?> _playerQueryService;
 	private readonly ICommandService<PlayerLoginRewardCommand> _commandService;
 
-	public PlayerLoginHandler(
+	public PlayerLoginEventHandler(
 		IPlayerServiceClient playerServiceClient,
 		IGetService<GetPlayerInfoQuery, PlayerInfo?> playerQueryService,
 		ICommandService<PlayerLoginRewardCommand> commandService)

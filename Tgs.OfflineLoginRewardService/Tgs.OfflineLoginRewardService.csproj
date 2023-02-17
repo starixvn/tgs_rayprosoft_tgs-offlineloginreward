@@ -5,10 +5,26 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Tgs.OfflineLoginReward</RootNamespace>
+    <UserSecretsId>ec0025d9-641a-4475-950f-2d8c45e2bf9b</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileBuildArguments>--build-arg "BuildConfiguration=$(Configuration)"</DockerfileBuildArguments>
+    <DockerfileTag Condition="$(DockerfileTag) == ''">pgtgs/promtoion-offlineloginreward</DockerfileTag>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentdForward.OpenTelemetry.MessagePack" Version="0.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+    <PackageReference Include="Npgsql.OpenTelemetry" Version="7.0.2" />
+    <PackageReference Include="OpenTelemetry.Api.ProviderBuilderExtensions" Version="1.4.0-rc.4" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.4.0-rc.4" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.4.0-rc.4" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9.13" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.4" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9.13" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.1.0-rc.1" />
+    <PackageReference Include="ProfileViewer.OpenTelemetry.Exporter" Version="0.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Tgs.Interceptors" Version="0.2.1" />
     <PackageReference Include="Tgs.MessageQueue.Nats" Version="2.1.7" />
     <PackageReference Include="Tgs.Operator.Client" Version="0.0.1" />
   </ItemGroup>
@@ -18,7 +34,6 @@
     <ProjectReference Include="..\OfflineLoginReward.Core\OfflineLoginReward.Core.csproj" />
     <ProjectReference Include="..\OfflineLoginReward.Repositories\OfflineLoginReward.Repositories.csproj" />
   </ItemGroup>
-
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">

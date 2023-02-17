@@ -18,7 +18,7 @@ public class PlayerLoginHandlerTests
 		var fakePlayerQueryService = Substitute.For<IGetService<GetPlayerInfoQuery, PlayerInfo?>>();
 		var fakeLoginRewardCommand = Substitute.For<ICommandService<PlayerLoginRewardCommand>>();
 
-		var sut = new PlayerLoginHandler(
+		var sut = new PlayerLoginEventHandler(
 			fakePlayerServiceClient,
 			fakePlayerQueryService,
 			fakeLoginRewardCommand);
@@ -69,7 +69,7 @@ public class PlayerLoginHandlerTests
 		var fakePlayerQueryService = Substitute.For<IGetService<GetPlayerInfoQuery, PlayerInfo?>>();
 		var fakeLoginRewardCommand = Substitute.For<ICommandService<PlayerLoginRewardCommand>>();
 
-		var sut = new PlayerLoginHandler(
+		var sut = new PlayerLoginEventHandler(
 			fakePlayerServiceClient,
 			fakePlayerQueryService,
 			fakeLoginRewardCommand);
@@ -109,7 +109,7 @@ public class PlayerLoginHandlerTests
 		var fakePlayerQueryService = Substitute.For<IGetService<GetPlayerInfoQuery, PlayerInfo?>>();
 		var fakeLoginRewardCommand = Substitute.For<ICommandService<PlayerLoginRewardCommand>>();
 
-		var sut = new PlayerLoginHandler(
+		var sut = new PlayerLoginEventHandler(
 			fakePlayerServiceClient,
 			fakePlayerQueryService,
 			fakeLoginRewardCommand);
