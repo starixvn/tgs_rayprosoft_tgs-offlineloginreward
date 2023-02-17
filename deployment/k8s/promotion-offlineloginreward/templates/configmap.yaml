@@ -7,7 +7,7 @@ data:
     {  
       "OfflineLoginReward": {
         "PromotionBaseUrl": "http://promotion-api",
-        "PlayerBaseUrl": "http://player-api"
+        "PlayerServiceBaseUrl": "http://player-api"
       }
     }
   otel-collector-config.yaml: |
