@@ -53,7 +53,7 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
-                    volumeMounts:
+          volumeMounts:
             - mountPath: /config/appsettings.json
               name: appsettings
               readOnly: true
