@@ -7,18 +7,15 @@ namespace Tgs.OfflineLoginReward.MessageQueue;
 
 internal class OfflineLoginRewardSettingProcessor : IMessageProcessor
 {
-	private static readonly JsonSerializerOptions _SettingSerializerOptions = new()
-	{
-		PropertyNameCaseInsensitive = false
-	};
-
 	public ValueTask<ReadOnlyMemory<byte>> HandleAsync(
 		ReadOnlyMemory<byte> data,
 		CancellationToken cancellationToken = default)
 	{
 		var request = CampaignDetailRequest.Parser.ParseFrom(data.Span);
 
-		var settings = JsonSerializer.Deserialize<OfflineLoginRewardSettings>(request.Settings, _SettingSerializerOptions);
+		var settings = JsonSerializer.Deserialize<OfflineLoginRewardSettings>(
+			request.Settings, 
+			OfflineLoginRewardUtility.SerializerOptions);
 
 		if (settings == null)
 			throw new InvalidOperationException("Settings is null");
