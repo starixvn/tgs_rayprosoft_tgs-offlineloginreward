@@ -22,7 +22,7 @@ public class OfflineLoginRewardSettingProcessorTests
 		var request = new CampaignDetailRequest
 		{
 			PromotionId = Guid.NewGuid(),
-			Settings = JsonSerializer.Serialize(settings)
+			Settings = JsonSerializer.Serialize(settings, OfflineLoginRewardUtility.SerializerOptions)
 		};
 
 		var sut = new OfflineLoginRewardSettingProcessor();
@@ -59,7 +59,7 @@ public class OfflineLoginRewardSettingProcessorTests
 		var request = new CampaignDetailRequest
 		{
 			PromotionId = Guid.NewGuid(),
-			Settings = JsonSerializer.Serialize(settings)
+			Settings = JsonSerializer.Serialize(settings, OfflineLoginRewardUtility.SerializerOptions)
 		};
 
 		var sut = new OfflineLoginRewardSettingProcessor();
@@ -83,7 +83,7 @@ public class OfflineLoginRewardSettingProcessorTests
 		var request = new CampaignDetailRequest
 		{
 			PromotionId = Guid.NewGuid(),
-			Settings = JsonSerializer.Serialize(settings)
+			Settings = JsonSerializer.Serialize(settings, OfflineLoginRewardUtility.SerializerOptions)
 		};
 
 		var sut = new OfflineLoginRewardSettingProcessor();
@@ -107,7 +107,7 @@ public class OfflineLoginRewardSettingProcessorTests
 		var request = new CampaignDetailRequest
 		{
 			PromotionId = Guid.NewGuid(),
-			Settings = JsonSerializer.Serialize(settings)
+			Settings = JsonSerializer.Serialize(settings, OfflineLoginRewardUtility.SerializerOptions)
 		};
 
 		var sut = new OfflineLoginRewardSettingProcessor();
