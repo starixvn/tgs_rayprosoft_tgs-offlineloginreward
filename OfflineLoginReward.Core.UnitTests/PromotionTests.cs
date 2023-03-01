@@ -38,7 +38,7 @@ public class PromotionTests
 		var settings = new OfflineLoginRewardSettings(
 			10m,
 			1m,
-			new[] { "player1", "player2" });
+			new HashSet<string>{ "player1", "player2" });
 
 		_ = fakePromotionServiceClient.GetPromotionRuleAsync<GetOfflineLoginRewardSettingsQueryService.PromotionRule>(
 				Arg.Is(promotionId))
@@ -53,7 +53,7 @@ public class PromotionTests
 		var expected = new OfflineLoginRewardSettings(
 			10m,
 			1m,
-			new[] { "player1", "player2" });
+			new HashSet<string> { "player1", "player2" });
 
 		var actual = await sut.GetAsync(query);
 

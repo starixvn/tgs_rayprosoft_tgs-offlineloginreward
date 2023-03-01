@@ -30,7 +30,7 @@ public class OfflineLoginRewardSettingProcessorTests
 		var expected = new OfflineLoginRewardSettings(
 			10,
 			1,
-			new List<string> { "player1", "player2" });
+			new HashSet<string> { "player1", "player2" });
 
 		var response = await sut.HandleAsync(request.ToByteArray());
 

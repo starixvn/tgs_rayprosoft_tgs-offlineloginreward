@@ -45,7 +45,7 @@ public class OfflineLoginRewardUnitTests
 		var settings = new OfflineLoginRewardSettings(
 			10m,
 			1m,
-			new[] { playerCode });
+			new HashSet<string> { playerCode });
 
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
@@ -148,7 +148,7 @@ public class OfflineLoginRewardUnitTests
 		var settings = new OfflineLoginRewardSettings(
 			10m,
 			1m,
-			new[] { playerCode });
+			new HashSet<string> { playerCode });
 
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
@@ -250,7 +250,7 @@ public class OfflineLoginRewardUnitTests
 		var settings = new OfflineLoginRewardSettings(
 			10m,
 			1m,
-			new[] { "player2" });
+			new HashSet<string> { "player2" });
 
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
@@ -376,7 +376,7 @@ public class OfflineLoginRewardUnitTests
 		var settings = new OfflineLoginRewardSettings(
 			10m,
 			1m,
-			new[] { "player2" });
+			new HashSet<string> { "player2" });
 
 		var rewardEventInfo = new OfflineLoginRewardEventInfo(
 			Guid.NewGuid(),
