@@ -17,7 +17,7 @@ internal class OfflineLoginRewardSettingProcessor : IMessageProcessor
 			request.Settings, 
 			OfflineLoginRewardUtility.SerializerOptions);
 
-		if (settings == null)
+		if (settings is null)
 			throw new InvalidOperationException("Settings is null");
 
 		if (settings.BonusAmount <= 0m)

@@ -25,8 +25,7 @@ internal class QualifiedOfflineLoginRewardPromotionListQueryService :
 
 		return _queryService
 			.QueryAsync(new OfflineLoginRewardPromotionListQuery(), cancellationToken)
-			.Where(p => p.BrandId == query.BrandId
-			            && p.EventDuring.From <= utcNow 
+			.Where(p => p.EventDuring.From <= utcNow 
 			            && p.EventDuring.To > utcNow);
 	}
 }

@@ -109,7 +109,7 @@ public class PromotionTests
 				Arg.Any<CancellationToken>())
 			.Returns(promotions.ToAsyncEnumerable());
 
-		var query = new QualifiedOfflineLoginRewardPromotionListQuery(brandId);
+		var query = new QualifiedOfflineLoginRewardPromotionListQuery();
 
 		var sut = new QualifiedOfflineLoginRewardPromotionListQueryService(
 			fakeSystemClock,
