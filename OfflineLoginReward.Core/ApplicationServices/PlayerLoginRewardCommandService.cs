@@ -7,21 +7,18 @@ namespace Tgs.OfflineLoginReward.ApplicationServices;
 internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewardCommand>
 {
 	private readonly IPlayerServiceClient _playerServiceClient;
-	private readonly IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo> _promotionQueryService;
-	private readonly IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?> _promotionSettingsQueryService;
+	private readonly IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion> _promotionListQueryService;
 	private readonly ICommandService<DistributeBonusCommand> _distributeService;
 	private readonly IOfflineLoginRewardEventService _eventService;
 
 	public PlayerLoginRewardCommandService(
 		IPlayerServiceClient playerServiceClient,
-		IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo> promotionListQueryService,
-		IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?> promotionSettingsQueryService,
+		IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion> promotionListQueryService,
 		ICommandService<DistributeBonusCommand> distributeService,
 		IOfflineLoginRewardEventService eventService)
 	{
 		_playerServiceClient = playerServiceClient ?? throw new ArgumentNullException(nameof(playerServiceClient));
-		_promotionQueryService = promotionListQueryService ?? throw new ArgumentNullException(nameof(promotionListQueryService));
-		_promotionSettingsQueryService = promotionSettingsQueryService ?? throw new ArgumentNullException(nameof(promotionSettingsQueryService));
+		_promotionListQueryService = promotionListQueryService ?? throw new ArgumentNullException(nameof(promotionListQueryService));
 		_distributeService = distributeService ?? throw new ArgumentNullException(nameof(distributeService));
 		_eventService = eventService ?? throw new ArgumentNullException(nameof(eventService));
 	}
@@ -30,9 +27,15 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 		PlayerLoginRewardCommand command, 
 		CancellationToken cancellationToken = default)
 	{
-		var promotions = await _promotionQueryService
+		var now = DateTime.UtcNow;
+
+		var promotions = await _promotionListQueryService
 			.QueryAsync(new(), cancellationToken)
+			.Where(p => p.EventDuring.StartTime <= now 
+			            && p.EventDuring.EndTime > now 
+			            && p.Settings.PlayerCodes.Contains(command.PlayerCode))
 			.ToArrayAsync(cancellationToken)
+			
 			.ConfigureAwait(false);
 
 		if (promotions.Length == 0)
@@ -40,18 +43,10 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 		
 		foreach (var promotion in promotions)
 		{
-			var settings = await _promotionSettingsQueryService.GetAsync(
-					new GetOfflineLoginRewardSettingsQuery(promotion.Id),
-					cancellationToken)
-				.ConfigureAwait(false);
-
-			if (settings is null || !settings.PlayerCodes.Contains(command.PlayerCode))
-				continue;
-
 			var rewardInfo = await _eventService
 				.GetOfflineLoginRewardEventAsync(
 					command.PlayerCode, 
-					promotion.Id, 
+					promotion.PromotionId, 
 					cancellationToken)
 				.ConfigureAwait(false);
 			
@@ -66,20 +61,23 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 				continue;
 
 			var isCreateEventProcessing = await _eventService
-				.IsCreateOfflineLoginRewardEventProcessingAsync(command.PlayerCode, promotion.Id, cancellationToken)
+				.IsCreateOfflineLoginRewardEventProcessingAsync(
+					command.PlayerCode, 
+					promotion.PromotionId,
+					cancellationToken)
 				.ConfigureAwait(false);
 
 			if (isCreateEventProcessing)
 				continue;
 
-			var bonusAmount = settings.BonusAmount;
-			var bucketAmount = bonusAmount * settings.TurnoverMultiple;
+			var bonusAmount = promotion.Settings.BonusAmount;
+			var bucketAmount = bonusAmount * promotion.Settings.TurnoverMultiple;
 
 			var rewardId = await _eventService
 				.CreateOfflineLoginRewardEventAsync(
 					new CreateOfflineLoginRewardEventInfo(
 						command.PlayerCode,
-						promotion.Id,
+						promotion.PromotionId,
 						promotion.BrandId,
 						bonusAmount,
 						bucketAmount,
@@ -90,7 +88,7 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 			await _distributeService
 				.ExecuteAsync(
 					new DistributeBonusCommand(
-						promotion.Id,
+						promotion.PromotionId,
 						command.PlayerCode,
 						bonusAmount,
 						bucketAmount,

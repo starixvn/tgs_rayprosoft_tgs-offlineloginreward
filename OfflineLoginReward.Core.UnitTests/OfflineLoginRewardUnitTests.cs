@@ -15,14 +15,13 @@ public class OfflineLoginRewardUnitTests
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePlayerServiceClient = Substitute.For<IPlayerServiceClient>();
 		var fakePromotionQueryService =
-			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
-		var fakePromotionSettingsQueryService =
-			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
+			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
 
-		var sut = new PlayerLoginRewardCommandService(fakePlayerServiceClient, fakePromotionQueryService,
-			fakePromotionSettingsQueryService,
+		var sut = new PlayerLoginRewardCommandService(
+			fakePlayerServiceClient, 
+			fakePromotionQueryService,
 			fakeDistributeService, 
 			fakeEventService);
 
@@ -33,36 +32,25 @@ public class OfflineLoginRewardUnitTests
 
 		var promotionId = Guid.NewGuid();
 
-		var promotion = new PromotionMainInfo
-		{
-			Id = promotionId,
-			EventDuring = new During(now.AddDays(-1), now.AddDays(1)),
-			Name = "TestPromotion",
-			PromotionType = "OfflineLoginReward",
-			BrandId = brandId,
-			IsAutoSent = true
-		};
-
-		var settings = new OfflineLoginRewardSettings(
-			10m,
-			1m,
-			new HashSet<string> { playerCode });
+		var promotion = new OfflineLoginRewardPromotion(
+			promotionId, 
+			brandId,
+			new EventDuring(now.AddDays(-1), now.AddDays(1)),
+			new OfflineLoginRewardSettings(
+				10m,
+				1m,
+				new HashSet<string> { playerCode }));
 
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery()),
+				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
 
-		_ = fakePromotionSettingsQueryService.GetAsync(
-				Arg.Is(new GetOfflineLoginRewardSettingsQuery(promotionId)),
-				Arg.Any<CancellationToken>())
-			.Returns(settings);
-
 		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
 				Arg.Is(playerCode),
-				Arg.Is(promotion.Id),
+				Arg.Is(promotion.PromotionId),
 				Arg.Any<CancellationToken>())
 			.Returns((OfflineLoginRewardEventInfo?)null);
 
@@ -123,14 +111,13 @@ public class OfflineLoginRewardUnitTests
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePlayerServiceClient = Substitute.For<IPlayerServiceClient>();
 		var fakePromotionQueryService =
-			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
-		var fakePromotionSettingsQueryService =
-			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
+			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
 
-		var sut = new PlayerLoginRewardCommandService(fakePlayerServiceClient, fakePromotionQueryService,
-			fakePromotionSettingsQueryService,
+		var sut = new PlayerLoginRewardCommandService(
+			fakePlayerServiceClient, 
+			fakePromotionQueryService,
 			fakeDistributeService,
 			fakeEventService);
 
@@ -141,15 +128,14 @@ public class OfflineLoginRewardUnitTests
 
 		var promotionId = Guid.NewGuid();
 
-		var promotion = new PromotionMainInfo
-		{
-			Id = promotionId,
-			EventDuring = new During(now.AddDays(-1), now.AddDays(1)),
-			Name = "TestPromotion",
-			PromotionType = "OfflineLoginReward",
-			BrandId = brandId,
-			IsAutoSent = true
-		};
+		var promotion = new OfflineLoginRewardPromotion(
+			promotionId,
+			brandId,
+			new EventDuring(now.AddDays(-1), now.AddDays(1)),
+			new OfflineLoginRewardSettings(
+				10m,
+				1m,
+				new HashSet<string> { playerCode }));
 
 		var settings = new OfflineLoginRewardSettings(
 			10m,
@@ -159,18 +145,13 @@ public class OfflineLoginRewardUnitTests
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery()),
+				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
-
-		_ = fakePromotionSettingsQueryService.GetAsync(
-				Arg.Is(new GetOfflineLoginRewardSettingsQuery(promotionId)),
-				Arg.Any<CancellationToken>())
-			.Returns(settings);
-
+		
 		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
 				Arg.Is(playerCode),
-				Arg.Is(promotion.Id),
+				Arg.Is(promotion.PromotionId),
 				Arg.Any<CancellationToken>())
 			.Returns((OfflineLoginRewardEventInfo?)null);
 
@@ -231,14 +212,13 @@ public class OfflineLoginRewardUnitTests
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePlayerServiceClient = Substitute.For<IPlayerServiceClient>();
 		var fakePromotionQueryService =
-			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
-		var fakePromotionSettingsQueryService =
-			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
+			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
 
-		var sut = new PlayerLoginRewardCommandService(fakePlayerServiceClient, fakePromotionQueryService,
-			fakePromotionSettingsQueryService,
+		var sut = new PlayerLoginRewardCommandService(
+			fakePlayerServiceClient, 
+			fakePromotionQueryService,
 			fakeDistributeService, 
 			fakeEventService);
 
@@ -248,33 +228,22 @@ public class OfflineLoginRewardUnitTests
 
 		var promotionId = Guid.NewGuid();
 
-		var promotion = new PromotionMainInfo
-		{
-			Id = promotionId,
-			EventDuring = new During(now.AddDays(-1), now.AddDays(1)),
-			Name = "TestPromotion",
-			PromotionType = "OfflineLoginReward",
-			BrandId = brandId,
-			IsAutoSent = true
-		};
-
-		var settings = new OfflineLoginRewardSettings(
-			10m,
-			1m,
-			new HashSet<string> { "player2" });
+		var promotion = new OfflineLoginRewardPromotion(
+			promotionId,
+			brandId,
+			new EventDuring(now.AddDays(-1), now.AddDays(1)),
+			new OfflineLoginRewardSettings(
+				10m,
+				1m,
+				new HashSet<string> { "player2" }));
 
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery()),
+				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
-
-		_ = fakePromotionSettingsQueryService.GetAsync(
-				Arg.Is(new GetOfflineLoginRewardSettingsQuery(promotionId)),
-				Arg.Any<CancellationToken>())
-			.Returns(settings);
-
+		
 		var command = new PlayerLoginRewardCommand(
 			playerCode,
 			now);
@@ -300,15 +269,15 @@ public class OfflineLoginRewardUnitTests
 	{
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePlayerServiceClient = Substitute.For<IPlayerServiceClient>();
+
 		var fakePromotionQueryService =
-			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
-		var fakePromotionSettingsQueryService =
-			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
+			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
 
-		var sut = new PlayerLoginRewardCommandService(fakePlayerServiceClient, fakePromotionQueryService,
-			fakePromotionSettingsQueryService,
+		var sut = new PlayerLoginRewardCommandService(
+			fakePlayerServiceClient,
+			fakePromotionQueryService,
 			fakeDistributeService,
 			fakeEventService);
 
@@ -321,22 +290,16 @@ public class OfflineLoginRewardUnitTests
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery()),
+				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
 				Arg.Any<CancellationToken>())
-			.Returns(Array.Empty<PromotionMainInfo>().ToAsyncEnumerable());
+			.Returns(Array.Empty<OfflineLoginRewardPromotion>().ToAsyncEnumerable());
 
 		var command = new PlayerLoginRewardCommand(
 			playerCode,
 			now);
 
 		await sut.ExecuteAsync(command);
-
-		_ = fakePromotionSettingsQueryService
-			.DidNotReceive()
-			.GetAsync(
-				Arg.Is(new GetOfflineLoginRewardSettingsQuery(promotionId)),
-				Arg.Any<CancellationToken>());
-
+		
 		_ = fakeEventService
 			.DidNotReceive()
 			.CreateOfflineLoginRewardEventAsync(
@@ -357,14 +320,13 @@ public class OfflineLoginRewardUnitTests
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePlayerServiceClient = Substitute.For<IPlayerServiceClient>();
 		var fakePromotionQueryService =
-			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
-		var fakePromotionSettingsQueryService =
-			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
+			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
 
-		var sut = new PlayerLoginRewardCommandService(fakePlayerServiceClient, fakePromotionQueryService,
-			fakePromotionSettingsQueryService,
+		var sut = new PlayerLoginRewardCommandService(
+			fakePlayerServiceClient, 
+			fakePromotionQueryService,
  			fakeDistributeService, 
 			fakeEventService);
 
@@ -374,20 +336,14 @@ public class OfflineLoginRewardUnitTests
 
 		var promotionId = Guid.NewGuid();
 
-		var promotion = new PromotionMainInfo
-		{
-			Id = promotionId,
-			EventDuring = new During(now.AddDays(-1), now.AddDays(1)),
-			Name = "TestPromotion",
-			PromotionType = "OfflineLoginReward",
-			BrandId = brandId,
-			IsAutoSent = true
-		};
-
-		var settings = new OfflineLoginRewardSettings(
-			10m,
-			1m,
-			new HashSet<string> { "player2" });
+		var promotion = new OfflineLoginRewardPromotion(
+			promotionId,
+			brandId,
+			new EventDuring(now.AddDays(-1), now.AddDays(1)),
+			new OfflineLoginRewardSettings(
+				10m,
+				1m,
+				new HashSet<string> { "player2" }));
 
 		var rewardEventInfo = new OfflineLoginRewardEventInfo(
 			Guid.NewGuid(),
@@ -402,14 +358,9 @@ public class OfflineLoginRewardUnitTests
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery()),
+				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
-
-		_ = fakePromotionSettingsQueryService.GetAsync(
-				Arg.Is(new GetOfflineLoginRewardSettingsQuery(promotionId)),
-				Arg.Any<CancellationToken>())
-			.Returns(settings);
 
 		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
 			Arg.Is(playerCode),
@@ -443,14 +394,13 @@ public class OfflineLoginRewardUnitTests
 		var fakeSystemClock = Substitute.For<ISystemClock>();
 		var fakePlayerServiceClient = Substitute.For<IPlayerServiceClient>();
 		var fakePromotionQueryService =
-			Substitute.For<IQueryService<QualifiedOfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
-		var fakePromotionSettingsQueryService =
-			Substitute.For<IGetService<GetOfflineLoginRewardSettingsQuery, OfflineLoginRewardSettings?>>();
+			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion>>();
 		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
 		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
 
-		var sut = new PlayerLoginRewardCommandService(fakePlayerServiceClient, fakePromotionQueryService,
-			fakePromotionSettingsQueryService,
+		var sut = new PlayerLoginRewardCommandService(
+			fakePlayerServiceClient, 
+			fakePromotionQueryService,
 			fakeDistributeService,
 			fakeEventService);
 
@@ -461,36 +411,25 @@ public class OfflineLoginRewardUnitTests
 
 		var promotionId = Guid.NewGuid();
 
-		var promotion = new PromotionMainInfo
-		{
-			Id = promotionId,
-			EventDuring = new During(now.AddDays(-1), now.AddDays(1)),
-			Name = "TestPromotion",
-			PromotionType = "OfflineLoginReward",
-			BrandId = brandId,
-			IsAutoSent = true
-		};
-
-		var settings = new OfflineLoginRewardSettings(
-			10m,
-			1m,
-			new HashSet<string> { playerCode });
+		var promotion = new OfflineLoginRewardPromotion(
+			promotionId,
+			brandId,
+			new EventDuring(now.AddDays(-1), now.AddDays(1)),
+			new OfflineLoginRewardSettings(
+				10m,
+				1m,
+				new HashSet<string> { playerCode }));
 
 		_ = fakeSystemClock.UtcNow.Returns(now);
 
 		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new QualifiedOfflineLoginRewardPromotionListQuery()),
+				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
-
-		_ = fakePromotionSettingsQueryService.GetAsync(
-				Arg.Is(new GetOfflineLoginRewardSettingsQuery(promotionId)),
-				Arg.Any<CancellationToken>())
-			.Returns(settings);
-
+		
 		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
 				Arg.Is(playerCode),
-				Arg.Is(promotion.Id),
+				Arg.Is(promotion.PromotionId),
 				Arg.Any<CancellationToken>())
 			.Returns((OfflineLoginRewardEventInfo?)null);
 

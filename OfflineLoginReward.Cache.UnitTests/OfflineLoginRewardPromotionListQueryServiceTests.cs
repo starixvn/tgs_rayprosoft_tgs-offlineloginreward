@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using NSubstitute;
+using Tgs.OfflineLoginReward;
 using Tgs.OfflineLoginReward.ApplicationServices;
 using Tgs.OfflineLoginReward.Cache;
-using Tgs.Promotion.Clients;
 using Tgs.ServiceUtility;
 
 namespace OfflineLoginReward.Cache.UnitTests;
@@ -18,30 +18,30 @@ public class OfflineLoginRewardPromotionListQueryServiceTests
 				new MemoryCacheOptions()));
 
 		var fakeSourceService =
-			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
+			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion>>();
 
 		var expected = new[]
 		{
-			new PromotionMainInfo
-			{
-				Id = Guid.NewGuid(),
-				BrandId = Guid.NewGuid(),
-				Name = "TestPromotion1",
-				EventDuring = new During(
+			new OfflineLoginRewardPromotion(
+				Guid.NewGuid(),
+				Guid.NewGuid(),
+				new EventDuring(
 					DateTime.UtcNow.AddDays(-1),
 					DateTime.UtcNow.AddDays(1)),
-				PromotionType = "OfflineLoginReward"
-			},
-			new PromotionMainInfo
-			{
-				Id = Guid.NewGuid(),
-				BrandId = Guid.NewGuid(),
-				Name = "TestPromotion2",
-				EventDuring = new During(
+				new OfflineLoginRewardSettings(
+					10m, 
+					1m,
+					new HashSet < string > { "player1" })),
+			new OfflineLoginRewardPromotion(
+				Guid.NewGuid(),
+				Guid.NewGuid(),
+				new EventDuring(
 					DateTime.UtcNow.AddDays(-3),
 					DateTime.UtcNow.AddDays(2)),
-				PromotionType = "OfflineLoginReward"
-			}
+				new OfflineLoginRewardSettings(
+					10m,
+					1m,
+					new HashSet < string > { "player1" }))
 		};
 
 		_ = fakeMemoryCache.Set("OfflineLoginReward:Promotions", expected);
@@ -71,30 +71,30 @@ public class OfflineLoginRewardPromotionListQueryServiceTests
 				new MemoryCacheOptions()));
 
 		var fakeSourceService =
-			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, PromotionMainInfo>>();
+			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion>>();
 
 		var expected = new[]
 		{
-			new PromotionMainInfo
-			{
-				Id = Guid.NewGuid(),
-				BrandId = Guid.NewGuid(),
-				Name = "TestPromotion1",
-				EventDuring = new During(
+			new OfflineLoginRewardPromotion(
+				Guid.NewGuid(),
+				Guid.NewGuid(),
+				new EventDuring(
 					DateTime.UtcNow.AddDays(-1),
 					DateTime.UtcNow.AddDays(1)),
-				PromotionType = "OfflineLoginReward"
-			},
-			new PromotionMainInfo
-			{
-				Id = Guid.NewGuid(),
-				BrandId = Guid.NewGuid(),
-				Name = "TestPromotion2",
-				EventDuring = new During(
+				new OfflineLoginRewardSettings(
+					10m,
+					1m,
+					new HashSet <string> { "player1" })),
+			new OfflineLoginRewardPromotion(
+				Guid.NewGuid(),
+				Guid.NewGuid(),
+				new EventDuring(
 					DateTime.UtcNow.AddDays(-3),
 					DateTime.UtcNow.AddDays(2)),
-				PromotionType = "OfflineLoginReward"
-			}
+				new OfflineLoginRewardSettings(
+					10m,
+					1m,
+					new HashSet <string> { "player1" }))
 		};
 
 		var query = new OfflineLoginRewardPromotionListQuery();
