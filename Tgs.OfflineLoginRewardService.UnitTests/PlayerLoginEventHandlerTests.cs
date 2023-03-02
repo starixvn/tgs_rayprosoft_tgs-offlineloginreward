@@ -9,7 +9,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.OfflineLoginRewardService.UnitTests;
 
-public class PlayerLoginHandlerTests
+public class PlayerLoginEventHandlerTests
 {
 	[Fact]
 	public async Task 收到登入事件後會進行活動判斷處理()

@@ -29,14 +29,15 @@ internal class PlayerLoginRewardHandler : IPlayerLoginRewardHandler
 		if (!promotion.Settings.PlayerCodes.Contains(playerCode))
 			return;
 
-		var rewardInfo = await _eventService
-			.GetOfflineLoginRewardEventAsync(
-				playerCode,
+		var isArchived = await _eventService
+			.IsEventArchivedAsync(
+				playerCode, 
 				promotion.PromotionId,
+				promotion.EventDuring.EndTime,
 				cancellationToken)
 			.ConfigureAwait(false);
 
-		if (rewardInfo is not null)
+		if (isArchived)
 			return;
 
 		var playerStatus = await _playerServiceClient
@@ -45,17 +46,7 @@ internal class PlayerLoginRewardHandler : IPlayerLoginRewardHandler
 
 		if (playerStatus is not PlayerStatus.Enabled)
 			return;
-
-		var isCreateEventProcessing = await _eventService
-			.IsCreateOfflineLoginRewardEventProcessingAsync(
-				playerCode,
-				promotion.PromotionId,
-				cancellationToken)
-			.ConfigureAwait(false);
-
-		if (isCreateEventProcessing)
-			return;
-
+		
 		var bonusAmount = promotion.Settings.BonusAmount;
 		var bucketAmount = bonusAmount * promotion.Settings.TurnoverMultiple;
 

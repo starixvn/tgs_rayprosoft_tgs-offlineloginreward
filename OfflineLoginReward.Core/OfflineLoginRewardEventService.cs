@@ -3,71 +3,47 @@
 internal class OfflineLoginRewardEventService : IOfflineLoginRewardEventService
 {
 	private readonly ITgsRepository _tgsRepository;
-	private readonly IOfflineLoginRewardEventRepository _eventRepository;
+	private readonly IStoreRepository _storeRepository;
 
 	public OfflineLoginRewardEventService(
 		ITgsRepository tgsRepository,
-		IOfflineLoginRewardEventRepository eventRepository)
+		IStoreRepository storeRepository)
 	{
 		_tgsRepository = tgsRepository ?? throw new ArgumentNullException(nameof(tgsRepository));
-		_eventRepository = eventRepository;
+		_storeRepository = storeRepository ?? throw new ArgumentNullException(nameof(storeRepository));
 	}
 
-	public async ValueTask<OfflineLoginRewardEventInfo?> GetOfflineLoginRewardEventAsync(
-		string playerCode,
-		Guid promotionId,
+	public ValueTask<Guid> CreateOfflineLoginRewardEventAsync(
+		CreateOfflineLoginRewardEventInfo createInfo,
+		CancellationToken cancellationToken = default)
+		=> _tgsRepository
+			.CreateOfflineLoginRewardEventAsync(createInfo, cancellationToken);
+
+	public async ValueTask<bool> IsEventArchivedAsync(
+		string playerCode, 
+		Guid promotionId, 
+		DateTime promotionEndTime,
 		CancellationToken cancellationToken = default)
 	{
-		var info = await _eventRepository.GetOfflineLoginRewardEventAsync(
-				playerCode, promotionId, cancellationToken)
+		var isSet = await _storeRepository
+			.SetEventArchivedAsync(playerCode, promotionId, promotionEndTime, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (info is not null)
-			return info; 
+		if (!isSet)
+			return true;
 
-		info = await _tgsRepository
+		var rewardEvent = await _tgsRepository
 			.GetOfflineLoginRewardEventAsync(playerCode, promotionId, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (info is not null)
-			await _eventRepository.SetOfflineLoginRewardEventAsync(playerCode, promotionId, info!, cancellationToken)
+		if (rewardEvent is null) 
+			return false;
+
+		_ = await _storeRepository
+			.SetEventArchivedAsync(playerCode, promotionId, promotionEndTime, cancellationToken)
 			.ConfigureAwait(false);
 
-		return info;
+		return true;
+
 	}
-
-	public async ValueTask<Guid> CreateOfflineLoginRewardEventAsync(
-		
-		CreateOfflineLoginRewardEventInfo createInfo,
-		CancellationToken cancellationToken = default)
-	{
-		await _eventRepository
-			.BeginCreateOfflineLoginRewardEventAsync(createInfo.PlayerCode, createInfo.PromotionId, cancellationToken)
-			.ConfigureAwait(false);
-
-		var eventId = await _tgsRepository
-			.CreateOfflineLoginRewardEventAsync(createInfo, cancellationToken)
-			.ConfigureAwait(false);
-
-		var info = await _tgsRepository
-			.GetOfflineLoginRewardEventAsync(eventId, cancellationToken)
-			.ConfigureAwait(false);
-
-		await _eventRepository
-			.SetOfflineLoginRewardEventAsync(createInfo.PlayerCode, createInfo.PromotionId, info!, cancellationToken)
-			.ConfigureAwait(false);
-
-		await _eventRepository
-			.CompleteCreateOfflineLoginRewardEventAsync(createInfo.PlayerCode, createInfo.PromotionId, cancellationToken)
-			.ConfigureAwait(false);
-
-		return eventId;
-	}
-
-	public ValueTask<bool> IsCreateOfflineLoginRewardEventProcessingAsync(
-		string playerCode,
-		Guid promotionId,
-		CancellationToken cancellationToken = default)
-		=> _eventRepository
-			.IsProcessingCreateOfflineLoginRewardEventAsync(playerCode, promotionId, cancellationToken);
 }

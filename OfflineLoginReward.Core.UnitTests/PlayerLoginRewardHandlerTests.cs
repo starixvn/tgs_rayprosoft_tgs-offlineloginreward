@@ -36,104 +36,18 @@ public class PlayerLoginRewardHandlerTests
 				1m,
 				new HashSet<string> { playerCode }));
 
-		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
+		_ = fakeEventService.IsEventArchivedAsync(
 				Arg.Is(playerCode),
 				Arg.Is(promotion.PromotionId),
+				Arg.Is(promotion.EventDuring.EndTime),
 				Arg.Any<CancellationToken>())
-			.Returns((OfflineLoginRewardEventInfo?)null);
-
-		_ = fakePlayerServiceClient.GetPlayerStatusAsync(
-				Arg.Is(playerCode),
-				Arg.Any<CancellationToken>())
-			.Returns(PlayerStatus.Enabled);
-
-		_ = fakeEventService.IsCreateOfflineLoginRewardEventProcessingAsync(
-			Arg.Is(playerCode),
-			Arg.Is(promotionId),
-			Arg.Any<CancellationToken>())
 			.Returns(false);
 
-		var recordId = Guid.NewGuid();
-
-		var createEventInfo = new CreateOfflineLoginRewardEventInfo(
-			playerCode,
-			promotionId,
-			brandId,
-			10m,
-			10m,
-			now);
-
-		_ = fakeEventService
-			.CreateOfflineLoginRewardEventAsync(
-				Arg.Is(createEventInfo),
-				Arg.Any<CancellationToken>())
-			.Returns(recordId);
-
-		await sut.OnDistributeRewardAsync(playerCode, promotion, now);
-
-		_ = fakeEventService
-			.Received(1)
-			.CreateOfflineLoginRewardEventAsync(
-				Arg.Is(createEventInfo),
-				Arg.Any<CancellationToken>());
-
-		_ = fakeDistributeService
-			.Received(1)
-			.ExecuteAsync(
-				Arg.Is(new DistributeBonusCommand(
-					promotionId,
-					playerCode,
-					10m,
-					10m,
-					recordId)),
-				Arg.Any<CancellationToken>());
-	}
-
-	[Fact]
-	public async Task 處理派發時_若已有派發彩金行為進行中_不進行派發()
-	{
-		var fakePlayerServiceClient = Substitute.For<IPlayerServiceClient>();
-		var fakeDistributeService = Substitute.For<ICommandService<DistributeBonusCommand>>();
-		var fakeEventService = Substitute.For<IOfflineLoginRewardEventService>();
-
-		var sut = new PlayerLoginRewardHandler(
-			fakePlayerServiceClient,
-			fakeDistributeService,
-			fakeEventService);
-
-		var now = DateTime.UtcNow;
-
-		var brandId = Guid.NewGuid();
-		var playerCode = "player1";
-
-		var promotionId = Guid.NewGuid();
-
-		var promotion = new OfflineLoginRewardPromotion(
-			promotionId,
-			brandId,
-			new EventDuring(now.AddDays(-1), now.AddDays(1)),
-			new OfflineLoginRewardSettings(
-				10m,
-				1m,
-				new HashSet<string> { playerCode }));
-
-		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
-				Arg.Is(playerCode),
-				Arg.Is(promotion.PromotionId),
-				Arg.Any<CancellationToken>())
-			.Returns((OfflineLoginRewardEventInfo?)null);
-
 		_ = fakePlayerServiceClient.GetPlayerStatusAsync(
 				Arg.Is(playerCode),
 				Arg.Any<CancellationToken>())
 			.Returns(PlayerStatus.Enabled);
 
-		_ = fakeEventService.IsCreateOfflineLoginRewardEventProcessingAsync(
-			Arg.Is(playerCode),
-			Arg.Is(promotionId),
-			Arg.Any<CancellationToken>())
-			.Returns(true);
-
 		var recordId = Guid.NewGuid();
 
 		var createEventInfo = new CreateOfflineLoginRewardEventInfo(
@@ -153,13 +67,13 @@ public class PlayerLoginRewardHandlerTests
 		await sut.OnDistributeRewardAsync(playerCode, promotion, now);
 
 		_ = fakeEventService
-			.DidNotReceive()
+			.Received(1)
 			.CreateOfflineLoginRewardEventAsync(
 				Arg.Is(createEventInfo),
 				Arg.Any<CancellationToken>());
 
 		_ = fakeDistributeService
-			.DidNotReceive()
+			.Received(1)
 			.ExecuteAsync(
 				Arg.Is(new DistributeBonusCommand(
 					promotionId,
@@ -169,7 +83,7 @@ public class PlayerLoginRewardHandlerTests
 					recordId)),
 				Arg.Any<CancellationToken>());
 	}
-
+	
 	[Fact]
 	public async Task 處理派發時_已派發過彩金_不進行派發()
 	{
@@ -195,23 +109,14 @@ public class PlayerLoginRewardHandlerTests
 			new OfflineLoginRewardSettings(
 				10m,
 				1m,
-				new HashSet<string> { "player2" }));
+				new HashSet<string> { "player1" }));
 
-		var rewardEventInfo = new OfflineLoginRewardEventInfo(
-			Guid.NewGuid(),
-			playerCode,
-			promotionId,
-			brandId,
-			10m,
-			10m,
-			now,
-			now);
-
-		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
-			Arg.Is(playerCode),
-			Arg.Is(promotionId),
-			Arg.Any<CancellationToken>())
-			.Returns(rewardEventInfo);
+		_ = fakeEventService.IsEventArchivedAsync(
+				Arg.Is(playerCode),
+				Arg.Is(promotion.PromotionId),
+				Arg.Is(promotion.EventDuring.EndTime),
+				Arg.Any<CancellationToken>())
+			.Returns(true);
 
 		await sut.OnDistributeRewardAsync(playerCode, promotion, now);
 
@@ -256,11 +161,12 @@ public class PlayerLoginRewardHandlerTests
 				1m,
 				new HashSet<string> { playerCode }));
 
-		_ = fakeEventService.GetOfflineLoginRewardEventAsync(
+		_ = fakeEventService.IsEventArchivedAsync(
 				Arg.Is(playerCode),
 				Arg.Is(promotion.PromotionId),
+				Arg.Is(promotion.EventDuring.EndTime),
 				Arg.Any<CancellationToken>())
-			.Returns((OfflineLoginRewardEventInfo?)null);
+			.Returns(false);
 
 		_ = fakePlayerServiceClient.GetPlayerStatusAsync(
 				Arg.Is(playerCode),

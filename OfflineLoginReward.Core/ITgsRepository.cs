@@ -10,8 +10,4 @@ public interface ITgsRepository
 		string playerCode,
 		Guid promotionId,
 		CancellationToken cancellationToken = default);
-
-	ValueTask<OfflineLoginRewardEventInfo?> GetOfflineLoginRewardEventAsync(
-		Guid eventId,
-		CancellationToken cancellationToken = default);
 }

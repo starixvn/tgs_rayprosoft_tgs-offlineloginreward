@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
 		=> services
 			.AddDbContext<TgsContext>(dbOptionsConfigure)
 			.AddTransient<ITgsRepository, TgsRepository>()
-			.AddTransient<IOfflineLoginRewardEventRepository>(sp 
-				=> ActivatorUtilities.CreateInstance<RedisRepository>(sp, redisDatabaseResolver(sp)) )
+			.AddTransient<IStoreRepository>(sp 
+				=> ActivatorUtilities.CreateInstance<RedisStoreRepository>(sp, redisDatabaseResolver(sp)) )
 			.AddSerialNumberGenerator();
 }

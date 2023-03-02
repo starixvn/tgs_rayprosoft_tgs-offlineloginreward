@@ -2,17 +2,13 @@
 
 internal interface IOfflineLoginRewardEventService
 {
-	ValueTask<OfflineLoginRewardEventInfo?> GetOfflineLoginRewardEventAsync(
-		string playerCode,
-		Guid promotionId,
-		CancellationToken cancellationToken = default);
-	
 	ValueTask<Guid> CreateOfflineLoginRewardEventAsync(
-		CreateOfflineLoginRewardEventInfo createInfo, 
+		CreateOfflineLoginRewardEventInfo createInfo,
 		CancellationToken cancellationToken = default);
 
-	ValueTask<bool> IsCreateOfflineLoginRewardEventProcessingAsync(
+	ValueTask<bool> IsEventArchivedAsync(
 		string playerCode,
 		Guid promotionId,
+		DateTime promotionEndTime,
 		CancellationToken cancellationToken = default);
 }

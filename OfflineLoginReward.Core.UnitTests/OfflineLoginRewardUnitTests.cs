@@ -86,3 +86,4 @@ public class OfflineLoginRewardUnitTests
 				Arg.Any<CancellationToken>());
 	}
 }
+
