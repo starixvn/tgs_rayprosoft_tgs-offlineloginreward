@@ -1,7 +1,6 @@
 ﻿using Tgs.MessageQueue;
 using Tgs.OfflineLoginReward.ApplicationServices;
 using Tgs.Operator.Client.Protos;
-using Tgs.PlayerService.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.OfflineLoginReward.MessageQueue;

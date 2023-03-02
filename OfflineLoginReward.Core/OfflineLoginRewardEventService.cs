@@ -37,6 +37,7 @@ internal class OfflineLoginRewardEventService : IOfflineLoginRewardEventService
 	}
 
 	public async ValueTask<Guid> CreateOfflineLoginRewardEventAsync(
+		
 		CreateOfflineLoginRewardEventInfo createInfo,
 		CancellationToken cancellationToken = default)
 	{

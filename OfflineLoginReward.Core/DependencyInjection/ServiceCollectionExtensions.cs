@@ -9,5 +9,5 @@ public static class ServiceCollectionExtensions
 		=> services
 			.RegisterAllServiceUtilityTypes(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient)
 			.AddTransient<IOfflineLoginRewardEventService, OfflineLoginRewardEventService>()
-			.AddSingleton<ISystemClock, DefaultSystemClock>();
+			.AddTransient<IPlayerLoginRewardHandler, PlayerLoginRewardHandler>();
 }

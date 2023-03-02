@@ -25,7 +25,7 @@ internal class RedisRepository : IOfflineLoginRewardEventRepository
 		Guid promotionId,
 		CancellationToken cancellationToken = default)
 	{
-		var key = $"OfflineLoginRewardEvent:{playerCode}:{promotionId}";
+		var key = $"OfflineLoginRewardEvent:{promotionId}:{playerCode}";
 
 		var value = await _redisDatabase.StringGetAsync(key).ConfigureAwait(false);
 
@@ -40,7 +40,7 @@ internal class RedisRepository : IOfflineLoginRewardEventRepository
 		OfflineLoginRewardEventInfo eventInfo,
 		CancellationToken cancellationToken = default)
 	{
-		var key = $"OfflineLoginRewardEvent:{playerCode}:{promotionId}";
+		var key = $"OfflineLoginRewardEvent:{promotionId}:{playerCode}";
 
 		_ = await _redisDatabase.StringSetAsync(
 			key,
@@ -53,7 +53,7 @@ internal class RedisRepository : IOfflineLoginRewardEventRepository
 		Guid promotionId,
 		CancellationToken cancellationToken = default)
 	{
-		var key = $"OfflineLoginRewardEvent:CreateLock:{playerCode}:{promotionId}";
+		var key = $"OfflineLoginRewardEvent:CreateLock:{promotionId}:{playerCode}";
 
 		_ = await _redisDatabase.StringSetAsync(
 			key,
@@ -66,7 +66,7 @@ internal class RedisRepository : IOfflineLoginRewardEventRepository
 		Guid promotionId,
 		CancellationToken cancellationToken = default)
 	{
-		var key = $"OfflineLoginRewardEvent:CreateLock:{playerCode}:{promotionId}";
+		var key = $"OfflineLoginRewardEvent:CreateLock:{promotionId}:{playerCode}";
 
 		_ = await _redisDatabase.KeyDeleteAsync(key).ConfigureAwait(false);
 	}
@@ -74,7 +74,7 @@ internal class RedisRepository : IOfflineLoginRewardEventRepository
 	public async ValueTask<bool> IsProcessingCreateOfflineLoginRewardEventAsync(string playerCode, Guid promotionId,
 		CancellationToken cancellationToken = default)
 	{
-		var key = $"OfflineLoginRewardEvent:CreateLock:{playerCode}:{promotionId}";
+		var key = $"OfflineLoginRewardEvent:CreateLock:{promotionId}:{playerCode}";
 
 		return await _redisDatabase.KeyExistsAsync(key).ConfigureAwait(false);
 	}
