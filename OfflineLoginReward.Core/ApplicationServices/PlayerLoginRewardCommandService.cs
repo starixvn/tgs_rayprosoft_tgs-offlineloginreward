@@ -1,29 +1,34 @@
-﻿using Tgs.PlayerService.Client;
+﻿using Microsoft.Extensions.Logging;
 using Tgs.ServiceUtility;
 
 namespace Tgs.OfflineLoginReward.ApplicationServices;
 
 internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewardCommand>
 {
-	private readonly IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion> _promotionListQueryService;
+	private readonly IOfflineLoginRewardPromotionListStore _promotionListListStore;
 	private readonly IPlayerLoginRewardHandler _playerLoginRewardHandler;
+	private readonly ILogger<PlayerLoginRewardCommandService> _logger;
 
 	public PlayerLoginRewardCommandService(
-		IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion> promotionListQueryService,
-		IPlayerLoginRewardHandler playerLoginRewardHandler)
+		IOfflineLoginRewardPromotionListStore promotionListStore,
+		IPlayerLoginRewardHandler playerLoginRewardHandler,
+		ILogger<PlayerLoginRewardCommandService> logger)
 	{
-		_promotionListQueryService = promotionListQueryService ?? throw new ArgumentNullException(nameof(promotionListQueryService));
+		_promotionListListStore = promotionListStore ?? throw new ArgumentNullException(nameof(promotionListStore));
 		_playerLoginRewardHandler = playerLoginRewardHandler ?? throw new ArgumentNullException(nameof(playerLoginRewardHandler));
+		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 	}
 
 	public async ValueTask ExecuteAsync(
 		PlayerLoginRewardCommand command, 
 		CancellationToken cancellationToken = default)
 	{
+		_logger.LogInformation("OnEvent");
+
 		var now = DateTime.UtcNow;
 
-		var promotions = await _promotionListQueryService
-			.QueryAsync(new(), cancellationToken)
+		var promotions = await _promotionListListStore
+			.QueryOfflineLoginRewardPromotionListAsync(cancellationToken)
 			.Where(p => p.EventDuring.StartTime <= now 
 			            && p.EventDuring.EndTime > now)
 			.ToArrayAsync(cancellationToken)

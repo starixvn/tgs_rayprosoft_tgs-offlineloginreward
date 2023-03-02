@@ -34,7 +34,11 @@ builder.Logging
 	});
 
 builder.Services
-	.AddOfflineLoginRewardCore()
+	.AddOfflineLoginRewardCore((options, _) =>
+	{
+		var section = builder.Configuration.GetSection("PromotionListRefresh");
+		options.PeriodBySeconds = section.GetValue<int>("PeriodBySeconds");
+	})
 	.AddSingleton(sp =>
 	{
 		var redisConnectionString = builder.Configuration.GetConnectionString("Redis")!;
@@ -90,13 +94,13 @@ builder.Services
 	.Services
 	.AddProfileViewer()
 	.Configure<AspNetCoreInstrumentationOptions>(options => options.Filter =
-		httpContext => !httpContext.Request.Path.HasValue
-		               || !httpContext.Request.Path.StartsWithSegments("/swagger")
-		               && !httpContext.Request.Path.StartsWithSegments("/healthz")
-		               && !httpContext.Request.Path.StartsWithSegments("/metrics")
-		               && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-		               && !new[] { "html", "ico", "png", "jpg" }.Any(
-			               ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
+		httpContext => !httpContext.Request.Path.HasValue 
+			|| !httpContext.Request.Path.StartsWithSegments("/swagger")
+			&& !httpContext.Request.Path.StartsWithSegments("/healthz")
+		    && !httpContext.Request.Path.StartsWithSegments("/metrics")
+		    && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+		    && !new[] { "html", "ico", "png", "jpg" }.Any(
+				ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
 
 builder.Services
 	.AddInterceptionService()

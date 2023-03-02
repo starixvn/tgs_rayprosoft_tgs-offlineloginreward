@@ -1,7 +1,7 @@
-﻿using NSubstitute;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using NSubstitute;
 using Tgs.OfflineLoginReward;
 using Tgs.OfflineLoginReward.ApplicationServices;
-using Tgs.ServiceUtility;
 
 namespace OfflineLoginReward.Core.UnitTests;
 
@@ -10,13 +10,14 @@ public class OfflineLoginRewardUnitTests
 	[Fact]
 	public async Task 玩家登入時_且符合資格時_會進行派發後續處理()
 	{
-		var fakePromotionQueryService =
-			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion>>();
+		var fakePromotionListStore = Substitute.For<IOfflineLoginRewardPromotionListStore>();
 		var fakePlayerLoginRewardHandler = Substitute.For<IPlayerLoginRewardHandler>();
+		var fakeLogger = NullLogger<PlayerLoginRewardCommandService>.Instance;
 
 		var sut = new PlayerLoginRewardCommandService(
-			fakePromotionQueryService, 
-			fakePlayerLoginRewardHandler);
+			fakePromotionListStore, 
+			fakePlayerLoginRewardHandler, 
+			fakeLogger);
 		
 		var brandId = Guid.NewGuid();
 		var playerCode = "player1";
@@ -32,8 +33,7 @@ public class OfflineLoginRewardUnitTests
 				1m,
 				new HashSet<string> { playerCode }));
 
-		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
+		_ = fakePromotionListStore.QueryOfflineLoginRewardPromotionListAsync(
 				Arg.Any<CancellationToken>())
 			.Returns(new[] { promotion }.ToAsyncEnumerable());
 		
@@ -55,19 +55,19 @@ public class OfflineLoginRewardUnitTests
 	[Fact]
 	public async Task 玩家登入時_找不到平台設定的活動_不做後續處理()
 	{
-		var fakePromotionQueryService =
-			Substitute.For<IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion>>();
+		var fakePromotionListStore = Substitute.For<IOfflineLoginRewardPromotionListStore>();
 		var fakePlayerLoginRewardHandler = Substitute.For<IPlayerLoginRewardHandler>();
+		var fakeLogger = NullLogger<PlayerLoginRewardCommandService>.Instance;
 
 		var sut = new PlayerLoginRewardCommandService(
-			fakePromotionQueryService,
-			fakePlayerLoginRewardHandler);
+			fakePromotionListStore,
+			fakePlayerLoginRewardHandler,
+			fakeLogger);
 
 		var now = DateTime.UtcNow;
 		var playerCode = "player1";
 
-		_ = fakePromotionQueryService.QueryAsync(
-				Arg.Is(new OfflineLoginRewardPromotionListQuery()),
+		_ = fakePromotionListStore.QueryOfflineLoginRewardPromotionListAsync(
 				Arg.Any<CancellationToken>())
 			.Returns(Array.Empty<OfflineLoginRewardPromotion>().ToAsyncEnumerable());
 
