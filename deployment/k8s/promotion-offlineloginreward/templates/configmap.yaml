@@ -8,6 +8,9 @@ data:
       "OfflineLoginReward": {
         "PromotionBaseUrl": "http://promotion-api",
         "PlayerServiceBaseUrl": "http://player-api"
+      },
+      "PromotionListRefresh": {
+        "PeriodBySeconds": 300
       }
     }
   otel-collector-config.yaml: |
