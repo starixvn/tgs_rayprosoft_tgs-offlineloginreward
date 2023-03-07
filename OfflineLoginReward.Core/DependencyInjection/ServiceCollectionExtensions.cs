@@ -15,7 +15,6 @@ public static class ServiceCollectionExtensions
 			.RegisterAllServiceUtilityTypes(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient)
 			.AddTransient<IOfflineLoginRewardEventService, OfflineLoginRewardEventService>()
 			.AddTransient<IPlayerLoginRewardHandler, PlayerLoginRewardHandler>()
-			.AddSingleton<PromotionListManager>()
-			.AddTransient<IPromotionListDataStore>(sp => sp.GetRequiredService<PromotionListManager>())
+			.AddSingleton<PromotionListDataStore>()
 			.AddHostedService<PromotionListManagerBackgroundService>();
 }

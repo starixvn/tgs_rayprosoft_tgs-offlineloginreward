@@ -8,16 +8,16 @@ namespace Tgs.OfflineLoginReward;
 internal class PromotionListManagerBackgroundService : BackgroundService
 {
 	private readonly IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion> _queryService;
-	private readonly PromotionListManager _manager;
+	private readonly PromotionListDataStore _dataStore;
 	private readonly TimeSpan _promotionListRenewPeriod;
 
 	public PromotionListManagerBackgroundService(
 		IQueryService<OfflineLoginRewardPromotionListQuery, OfflineLoginRewardPromotion> queryService,
-		PromotionListManager manager,
+		PromotionListDataStore dataStore,
 		IOptions<PromotionListRenewOptions> options)
 	{
 		_queryService = queryService ?? throw new ArgumentNullException(nameof(queryService));
-		_manager = manager ?? throw new ArgumentNullException(nameof(manager));
+		_dataStore = dataStore ?? throw new ArgumentNullException(nameof(dataStore));
 
 		if (options is null)
 			throw new ArgumentNullException(nameof(options));
@@ -38,8 +38,7 @@ internal class PromotionListManagerBackgroundService : BackgroundService
 				.ToArrayAsync(stoppingToken)
 				.ConfigureAwait(false);
 
-			_manager.RenewPromotionList(promotions);
-		} while (await timer.WaitForNextTickAsync(stoppingToken).ConfigureAwait(false)
-				 && !stoppingToken.IsCancellationRequested);
+			_dataStore.RenewPromotionList(promotions);
+		} while (await timer.WaitForNextTickAsync(stoppingToken).ConfigureAwait(false));
 	}
 }

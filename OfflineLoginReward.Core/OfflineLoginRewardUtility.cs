@@ -5,8 +5,6 @@ namespace Tgs.OfflineLoginReward;
 
 public static class OfflineLoginRewardUtility
 {
-	public static readonly string PromotionType = "OfflineLoginReward";
-
 	public static readonly JsonSerializerOptions SerializerOptions = new()
 	{
 		WriteIndented = false,

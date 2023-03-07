@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Tgs.OfflineLoginReward;
 
-internal class PromotionListManager : IPromotionListDataStore
+internal class PromotionListDataStore
 {
 	private readonly ReplaySubject<IEnumerable<OfflineLoginRewardPromotion>> _subject = new(1);
 

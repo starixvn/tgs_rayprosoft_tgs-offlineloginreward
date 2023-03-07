@@ -10,12 +10,11 @@ public class OfflineLoginRewardUnitTests
 	[Fact]
 	public async Task 玩家登入時_且符合資格時_會進行派發後續處理()
 	{
-		var fakePromotionDataStore = Substitute.For<IPromotionListDataStore>();
 		var fakePlayerLoginRewardHandler = Substitute.For<IPlayerLoginRewardHandler>();
-		var fakeLogger = NullLogger<PlayerLoginRewardCommandService>.Instance;
+		var promotionListDataStore = new PromotionListDataStore();
 
 		var sut = new PlayerLoginRewardCommandService(
-			fakePromotionDataStore, 
+			promotionListDataStore, 
 			fakePlayerLoginRewardHandler);
 		
 		var brandId = Guid.NewGuid();
@@ -32,10 +31,8 @@ public class OfflineLoginRewardUnitTests
 				1m,
 				new HashSet<string> { playerCode }));
 
-		_ = fakePromotionDataStore.GetPromotionListAsync(
-				Arg.Any<CancellationToken>())
-			.Returns(new[] { promotion }.ToAsyncEnumerable());
-		
+		promotionListDataStore.RenewPromotionList(new[] {promotion});
+
 		var command = new PlayerLoginRewardCommand(
 			playerCode,
 			now);
@@ -54,20 +51,17 @@ public class OfflineLoginRewardUnitTests
 	[Fact]
 	public async Task 玩家登入時_找不到平台設定的活動_不做後續處理()
 	{
-		var fakePromotionDataStore = Substitute.For<IPromotionListDataStore>();
 		var fakePlayerLoginRewardHandler = Substitute.For<IPlayerLoginRewardHandler>();
-		var fakeLogger = NullLogger<PlayerLoginRewardCommandService>.Instance;
+		var promotionListDataStore = new PromotionListDataStore();
 
 		var sut = new PlayerLoginRewardCommandService(
-			fakePromotionDataStore,
+			promotionListDataStore,
 			fakePlayerLoginRewardHandler);
 
 		var now = DateTime.UtcNow;
 		var playerCode = "player1";
 
-		_ = fakePromotionDataStore.GetPromotionListAsync(
-				Arg.Any<CancellationToken>())
-			.Returns(Array.Empty<OfflineLoginRewardPromotion>().ToAsyncEnumerable());
+		promotionListDataStore.RenewPromotionList(Array.Empty<OfflineLoginRewardPromotion>());
 
 		var command = new PlayerLoginRewardCommand(
 			playerCode,

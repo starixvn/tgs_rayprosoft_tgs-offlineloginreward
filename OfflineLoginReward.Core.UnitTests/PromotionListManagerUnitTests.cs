@@ -8,7 +8,7 @@ public class PromotionListManagerUnitTests
 	public async Task 如果沒有更新PromotionList會等待取得資料()
 	{
 		// Arrange
-		var sut = new PromotionListManager();
+		var sut = new PromotionListDataStore();
 
 		// Act
 		var actual = await Assert.ThrowsAsync<TimeoutException>(
@@ -23,7 +23,7 @@ public class PromotionListManagerUnitTests
 	public async Task 取得PromotionList會得到最後更新的結果()
 	{
 		// Arrange
-		var sut = new PromotionListManager();
+		var sut = new PromotionListDataStore();
 
 		sut.RenewPromotionList(Array.Empty<OfflineLoginRewardPromotion>());
 		sut.RenewPromotionList(new[]

@@ -22,7 +22,7 @@ internal class OfflineLoginRewardPromotionListQueryService
 
 		return _promotionServiceClient
 			.ListPromotionsByPromotionTypeAsync(
-				OfflineLoginRewardUtility.PromotionType,
+				"OfflineLoginReward",
 				cancellationToken)
 			.Where(info => info.EventDuring.From.AddHours(-1D) <= now
 						   && info.EventDuring.To.AddHours(1D) > now)
