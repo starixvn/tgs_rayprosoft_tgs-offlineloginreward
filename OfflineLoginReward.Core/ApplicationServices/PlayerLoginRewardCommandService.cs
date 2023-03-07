@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Tgs.ServiceUtility;
+﻿using Tgs.ServiceUtility;
 
 namespace Tgs.OfflineLoginReward.ApplicationServices;
 
@@ -7,24 +6,19 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 {
 	private readonly IPromotionListDataStore _promotionListDataStore;
 	private readonly IPlayerLoginRewardHandler _playerLoginRewardHandler;
-	private readonly ILogger<PlayerLoginRewardCommandService> _logger;
 
 	public PlayerLoginRewardCommandService(
 		IPromotionListDataStore promotionListDataStore,
-		IPlayerLoginRewardHandler playerLoginRewardHandler,
-		ILogger<PlayerLoginRewardCommandService> logger)
+		IPlayerLoginRewardHandler playerLoginRewardHandler)
 	{
 		_promotionListDataStore = promotionListDataStore ?? throw new ArgumentNullException(nameof(promotionListDataStore));
 		_playerLoginRewardHandler = playerLoginRewardHandler ?? throw new ArgumentNullException(nameof(playerLoginRewardHandler));
-		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 	}
 
 	public async ValueTask ExecuteAsync(
 		PlayerLoginRewardCommand command, 
 		CancellationToken cancellationToken = default)
 	{
-		_logger.LogInformation("OnEvent");
-
 		var now = DateTime.UtcNow;
 
 		var promotions = await _promotionListDataStore

@@ -16,8 +16,7 @@ public class OfflineLoginRewardUnitTests
 
 		var sut = new PlayerLoginRewardCommandService(
 			fakePromotionDataStore, 
-			fakePlayerLoginRewardHandler, 
-			fakeLogger);
+			fakePlayerLoginRewardHandler);
 		
 		var brandId = Guid.NewGuid();
 		var playerCode = "player1";
@@ -61,8 +60,7 @@ public class OfflineLoginRewardUnitTests
 
 		var sut = new PlayerLoginRewardCommandService(
 			fakePromotionDataStore,
-			fakePlayerLoginRewardHandler,
-			fakeLogger);
+			fakePlayerLoginRewardHandler);
 
 		var now = DateTime.UtcNow;
 		var playerCode = "player1";
