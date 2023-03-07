@@ -9,7 +9,7 @@ data:
         "PromotionBaseUrl": "http://promotion-api",
         "PlayerServiceBaseUrl": "http://player-api"
       },
-      "PromotionListRefresh": {
+      "PromotionListRenew": {
         "PeriodBySeconds": 300
       }
     }

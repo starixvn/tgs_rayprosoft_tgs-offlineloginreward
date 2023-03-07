@@ -36,7 +36,7 @@ builder.Logging
 builder.Services
 	.AddOfflineLoginRewardCore((options, _) =>
 	{
-		var section = builder.Configuration.GetSection("PromotionListRefresh");
+		var section = builder.Configuration.GetSection("PromotionListRenew");
 		options.PeriodBySeconds = section.GetValue<int>("PeriodBySeconds");
 	})
 	.AddSingleton(sp =>

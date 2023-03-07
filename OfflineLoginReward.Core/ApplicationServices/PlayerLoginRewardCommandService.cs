@@ -5,16 +5,16 @@ namespace Tgs.OfflineLoginReward.ApplicationServices;
 
 internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewardCommand>
 {
-	private readonly IOfflineLoginRewardPromotionListStore _promotionListListStore;
+	private readonly IPromotionListDataStore _promotionListDataStore;
 	private readonly IPlayerLoginRewardHandler _playerLoginRewardHandler;
 	private readonly ILogger<PlayerLoginRewardCommandService> _logger;
 
 	public PlayerLoginRewardCommandService(
-		IOfflineLoginRewardPromotionListStore promotionListStore,
+		IPromotionListDataStore promotionListDataStore,
 		IPlayerLoginRewardHandler playerLoginRewardHandler,
 		ILogger<PlayerLoginRewardCommandService> logger)
 	{
-		_promotionListListStore = promotionListStore ?? throw new ArgumentNullException(nameof(promotionListStore));
+		_promotionListDataStore = promotionListDataStore ?? throw new ArgumentNullException(nameof(promotionListDataStore));
 		_playerLoginRewardHandler = playerLoginRewardHandler ?? throw new ArgumentNullException(nameof(playerLoginRewardHandler));
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 	}
@@ -27,8 +27,8 @@ internal class PlayerLoginRewardCommandService : ICommandService<PlayerLoginRewa
 
 		var now = DateTime.UtcNow;
 
-		var promotions = await _promotionListListStore
-			.QueryOfflineLoginRewardPromotionListAsync(cancellationToken)
+		var promotions = await _promotionListDataStore
+			.GetPromotionListAsync(cancellationToken)
 			.Where(p => p.EventDuring.StartTime <= now 
 			            && p.EventDuring.EndTime > now)
 			.ToArrayAsync(cancellationToken)

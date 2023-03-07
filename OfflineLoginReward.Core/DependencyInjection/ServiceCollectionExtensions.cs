@@ -7,15 +7,15 @@ public static class ServiceCollectionExtensions
 {
 	public static IServiceCollection AddOfflineLoginRewardCore(
 		this IServiceCollection services,
-		Action<PromotionListRefreshOptions, IServiceProvider> configure)
+		Action<PromotionListRenewOptions, IServiceProvider> configure)
 		=> services
-			.AddOptions<PromotionListRefreshOptions>()
+			.AddOptions<PromotionListRenewOptions>()
 			.Configure(configure)
 			.Services
 			.RegisterAllServiceUtilityTypes(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient)
 			.AddTransient<IOfflineLoginRewardEventService, OfflineLoginRewardEventService>()
 			.AddTransient<IPlayerLoginRewardHandler, PlayerLoginRewardHandler>()
-			.AddSingleton<OfflineLoginRewardPromotionListManager>()
-			.AddTransient<IOfflineLoginRewardPromotionListStore>(sp => sp.GetRequiredService<OfflineLoginRewardPromotionListManager>())
-			.AddHostedService<OfflineLoginRewardPromotionListManagerBackgroundService>();
+			.AddSingleton<PromotionListManager>()
+			.AddTransient<IPromotionListDataStore>(sp => sp.GetRequiredService<PromotionListManager>())
+			.AddHostedService<PromotionListManagerBackgroundService>();
 }

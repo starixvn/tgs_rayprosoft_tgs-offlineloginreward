@@ -15,10 +15,8 @@ internal class OfflineLoginRewardSettingProcessor : IMessageProcessor
 
 		var settings = JsonSerializer.Deserialize<OfflineLoginRewardSettings>(
 			request.Settings, 
-			OfflineLoginRewardUtility.SerializerOptions);
-
-		if (settings is null)
-			throw new InvalidOperationException("Settings is null");
+			OfflineLoginRewardUtility.SerializerOptions) 
+		    ?? throw new InvalidOperationException("Settings is null");
 
 		if (settings.BonusAmount <= 0m)
 			throw new InvalidOperationException("BonusAmount should be greater than 0");
